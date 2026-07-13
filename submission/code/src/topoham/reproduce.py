@@ -1,13 +1,15 @@
-"""Installed reproduction command for the topology-guided Hamiltonian artifact.
+"""Installed reproduction command for the SpecOps-CGS artifact.
 
-Exposes ``topoham-reproduce`` (see ``pyproject.toml`` console scripts): one command
-that runs the full pipeline behind every reported number -- the experiment runner
+Exposes ``cgs-reproduce`` (see ``pyproject.toml`` console scripts;
+``topoham-reproduce`` is a back-compat alias): one command that runs the full
+pipeline behind every reported number -- the experiment runner
 (``scripts/run.py`` -> ``results/summary.json``), table and figure generation
 (``make_tables.py``, ``make_figures.py``), and the readiness-gate audit
 (``audit_claims.py``). It then syncs the regenerated table and figure artifacts into
 the ``submission/`` folder used to build the manuscript, so the paper's numbers,
 tables, and figures all trace to one run (Methods, "Reproducibility, software, and
-provenance").
+provenance"). ``--quick`` is a documented alias for ``--config configs/smoke.yaml``
+(a seconds-scale demo of the same pipeline).
 """
 
 from __future__ import annotations
@@ -63,8 +65,13 @@ def _sync_submission() -> None:
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="configs/full.yaml")
+    parser.add_argument(
+        "--quick", action="store_true",
+        help="seconds-scale demo run; alias for --config configs/smoke.yaml")
     parser.add_argument("--skip-run", action="store_true")
     args = parser.parse_args(argv)
+    if args.quick:
+        args.config = "configs/smoke.yaml"
     if not args.skip_run:
         _run("scripts/run.py", "--config", args.config, "--out", "results")
     _run("scripts/make_tables.py")

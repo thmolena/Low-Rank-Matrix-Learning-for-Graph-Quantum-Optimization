@@ -1,7 +1,7 @@
-% Manuscript prepared for submission to Physical Review Research.
-% Two-column APS REVTeX 4.2 article (prresearch journal style).
+% Manuscript prepared for submission to PRX Quantum.
+% Two-column APS REVTeX 4.2 article (prxquantum society option).
 % Compiles with a standard TeX distribution (TeX Live) or tectonic.
-\documentclass[aps,prresearch,reprint,amsmath,amssymb,floatfix,nofootinbib]{revtex4-2}
+\documentclass[aps,prxquantum,reprint,amsmath,amssymb,floatfix,nofootinbib]{revtex4-2}
 
 \usepackage{mathtools}
 \usepackage{amsthm}
@@ -14,11 +14,13 @@
 \usepackage{xcolor}
 \usepackage[hidelinks]{hyperref}
 
-\graphicspath{{code/figures/}}
+\graphicspath{{figures/}}
 
 % Auto-generated macros: every quoted number is defined in
-% code/results/macros.tex by scripts/make_tables.py from results/summary.json.
-\input{code/results/macros.tex}
+% tables/macros.tex, synced by the package entrypoint cgs-reproduce from
+% code/results/macros.tex (built by scripts/make_tables.py from
+% results/summary.json).
+\input{tables/macros.tex}
 
 % Absorb the few unavoidable few-point overfull boxes caused by long, unbreakable
 % typewriter file paths without affecting the spacing of ordinary paragraphs.
@@ -87,8 +89,12 @@ benchmark to $\MaxN$ qubits, where the order doubling is size independent
 ($\approx\!2$ vs.\ $\approx\!4$ from $\MinN$ to $\MaxN$ qubits) and the
 matched-cost speedup reaches $\SpeedupMaxN\times$. An interpretable scheduler
 over ten graph features selects the gate-optimal schedule per instance with
-$\LearnedAcc\%$ leave-one-out accuracy. CGS is a drop-in, fully reproducible
-upgrade for near-term quantum simulation.
+$\LearnedAcc\%$ leave-one-out accuracy. Our contribution is threefold: a
+statistical theory of the leading Trotter error (exact ordering invariance,
+antithetic cancellation, strict optimality, and a certified shot estimator), a
+zero-overhead scheduling algorithm released as the pip-installable package
+\texttt{specops-cgs}, and a matched-cost benchmark in which every figure, table,
+and quoted number regenerates from a single seeded command.
 \end{abstract}
 
 \maketitle
@@ -206,29 +212,51 @@ zero-overhead \emph{scheduling} choice---one that the impotence theorem shows a
 single fixed ordering can never realize---is new, and it changes the practical
 recommendation for first-order simulation.
 
-This manuscript makes six contributions. We introduce the commutator error
-form [Eq.~\eqref{eq:errorform}], a matrix-free representation of the leading
-Trotter error as a signed Pauli-string sum over the commutator graph, validated
-against the dense pair-commutator sum to $10^{-9}$ (Definition~\ref{def:errorform}).
-We prove that a single ordering cannot reduce the leading-error norm below an
-instance floor that is exactly ordering invariant on collision-free families
-(Theorem~\ref{thm:impotence}), which explains the empirical ceiling that ordering
-heuristics encounter. We prove that the antithetic schedule cancels the leading
+Our contributions are fourfold.
+\begin{enumerate}[leftmargin=*,itemsep=2pt,topsep=3pt,label=(\roman*)]
+\item \emph{An exact, estimable error operator.} We introduce the commutator
+error form [Eq.~\eqref{eq:errorform}], a matrix-free representation of the
+leading Trotter error as a signed Pauli-string sum over the commutator graph
+(Definition~\ref{def:errorform}), validated against the dense pair-commutator
+sum to $10^{-9}$.
+\item \emph{A statistical theory of scheduling, with full proofs.} A single
+ordering cannot reduce the leading-error norm below an instance floor that is
+exactly ordering invariant on collision-free families
+(Theorem~\ref{thm:impotence})---the provable content of the ``ordering is
+within noise'' folklore---while the antithetic schedule cancels the leading
 error and converges at second order at the identical gate budget
-(Theorem~\ref{thm:antithetic}), and we combine it with a commuting-clique
-compression of the commutator graph (Proposition~\ref{prop:colour}). We benchmark
-CGS against exact statevector references on $\Ninstances$ structured Hamiltonian
-instances, reporting rotations to a target fidelity and the empirical convergence
-rate; CGS reaches $0.99$ with $\GateSpeedup\times$ fewer rotations and is the only
-family of schedules to reach $0.999$ within the swept budget. A matrix-free Krylov
-reference extends the exact benchmark from the dense-exponential ceiling to $\MaxN$
-qubits; across $n=\MinN$ to $\MaxN$ the convergence-order doubling (first-order rate
-$\approx\!2$, antithetic rate $\approx\!4$) and the matched-cost speedup are size
-independent ($\SpeedupMaxN\times$ at $n=\MaxN$; Sec.~\ref{sec:scaling}). Finally, we add a learned scheduler over ten
-commutator-graph features that selects the gate-optimal schedule per instance with
-$\LearnedAcc\%$ leave-one-out accuracy and recovers near-oracle efficiency
-($\LearnedMeanGates$ rotations vs.\ the oracle's $\OracleMeanGates$)
-(Proposition~\ref{prop:invariance}).
+(Theorem~\ref{thm:antithetic}). The accompanying error-operator theory supplies
+a quantitative BCH remainder (Theorem~\ref{thm:bchremainder}), strict optimality
+of leading cancellation over every fixed ordering (Theorem~\ref{thm:optimality}),
+$\mathsf{NP}$-hardness of residual minimization together with a spectral
+relaxation (Theorem~\ref{thm:nphard}), and an unbiased shot-based estimator of
+the residual with a finite-sample certified confidence interval
+(Theorem~\ref{thm:estimator}). The last item makes the statistical viewpoint
+structural rather than decorative: a quantum computer is interrogated only
+through Born-rule samples, so the accuracy claim itself is delivered as a
+certified statistical inference.
+\item \emph{A zero-overhead algorithm, released as a pip-installable package.}
+CGS combines the antithetic fold with a commuting-clique compression of the
+commutator graph (Proposition~\ref{prop:colour}) and an interpretable learned
+scheduler over ten listing-order-invariant graph features
+(Proposition~\ref{prop:invariance}). The complete pipeline is the open-source
+package \texttt{specops-cgs}; its single console command
+\texttt{cgs-reproduce} regenerates every figure, table, and quoted number in
+this manuscript from one seeded run.
+\item \emph{A matched-cost empirical benchmark.} Against exact statevector
+references on $\Ninstances$ structured Hamiltonian instances, CGS lifts the
+empirical convergence rate from $\SlopeFirst$ to $\SlopeAnti$, reaches fidelity
+$0.99$ with $\GateSpeedup\times$ fewer rotations than the best first-order
+ordering, and is the only family of schedules to reach $0.999$ within the swept
+budget. A matrix-free Krylov reference extends the exact benchmark from the
+dense-exponential ceiling to $\MaxN$ qubits; across $n=\MinN$ to $\MaxN$ the
+convergence-order doubling (first-order rate $\approx\!2$, antithetic rate
+$\approx\!4$) and the matched-cost speedup are size independent
+($\SpeedupMaxN\times$ at $n=\MaxN$; Sec.~\ref{sec:scaling}). The learned
+scheduler selects the gate-optimal schedule per instance with $\LearnedAcc\%$
+leave-one-out accuracy and recovers near-oracle efficiency
+($\LearnedMeanGates$ rotations vs.\ the oracle's $\OracleMeanGates$).
+\end{enumerate}
 
 The boundaries of the study are explicit. CGS is evaluated by classical
 statevector simulation on systems up to $n=\MaxN$ qubits, where an exact reference
@@ -670,9 +698,12 @@ Eq.~\eqref{eq:errorform} and $\norm{\mathcal{R}_1(\Delta)}\le
 \tfrac{4}{3}(2\lambda)^{3}$. Consequently the $r$-step first-order propagator
 $S_\pi(\Delta)^r$ approximates $U(t)=e^{-\ii tH}$ with
 \begin{equation}
-    \norm{S_\pi(\Delta)^r-U(t)}\;\le\;\frac{\Delta^2}{2}\,\norm{E_\pi}\,r
-    \;+\;C\,\lambda^3\Delta^3\,r
-    \;=\;\frac{t^2}{2r}\norm{E_\pi}+\frac{C\lambda^3 t^3}{r^2},
+\begin{split}
+    \norm{S_\pi(\Delta)^r-U(t)}
+    &\;\le\;\frac{\Delta^2}{2}\,\norm{E_\pi}\,r
+    \;+\;C\,\lambda^3\Delta^3\,r\\
+    &\;=\;\frac{t^2}{2r}\norm{E_\pi}+\frac{C\lambda^3 t^3}{r^2},
+\end{split}
     \label{eq:firstorderbound}
 \end{equation}
 for an absolute constant $C\le\tfrac{16}{3}$; the leading term is the operator norm
@@ -839,9 +870,13 @@ CGS-edges on a common Pauli string $R_{uv}$ with unit weights and opposite base 
 $s=\pm1$ tied to spin variables $x_u,x_v\in\{\pm1\}$, so that the group's squared
 amplitude equals $(x_u-x_v)^2\in\{0,4\}$: it is $0$ iff $u,v$ lie on the same side of
 the cut and $4$ iff they are separated. Then
-$F(\varepsilon)=\sum_{uv\in E_G}(x_u-x_v)^2=4\,(\text{number of cut edges})$ is
+$F(\varepsilon)=\sum_{uv\in E_G}(x_u-x_v)^2$ equals $4$ times the number of
+cut edges, so $F$ is
 \emph{maximized}, not minimized, by the maximum cut; the identity
-$\sum_{uv}(x_u-x_v)^2=\sum_{uv}(2-2x_ux_v)=2\abs{E_G}-2\sum_{uv}x_ux_v$ shows
+\begin{equation*}
+\sum_{uv}(x_u-x_v)^2=\sum_{uv}(2-2x_ux_v)=2\abs{E_G}-2\sum_{uv}x_ux_v
+\end{equation*}
+shows that
 minimizing $\sum x_ux_v$ (an Ising ground state, \textsc{NP}-hard) is equivalent to
 maximizing the cut, and \emph{minimizing} $F$ is the complementary
 \textsc{Min-Uncut}/agreement problem, itself \textsc{NP}-hard. Thus an exact
@@ -1088,7 +1123,7 @@ part), and the resulting ordering-invariant fraction of the leading error, over 
 $N=48$ instances per family. Transcribed from the \texttt{collisions\_by\_family}
 block of \texttt{results/summary.json}.}
 \label{tab:impotence}
-\resizebox{\columnwidth}{!}{\input{code/results/tab_impotence.tex}}
+\resizebox{\columnwidth}{!}{\input{tables/tab_impotence.tex}}
 \end{table}
 
 \begin{figure*}[t]
@@ -1159,7 +1194,7 @@ reaches higher fidelity, while the symmetric fold trades $\approx2\times$ rotati
 per step for the lowest error. Transcribed from the \texttt{schedules\_table} block of
 \texttt{results/summary.json}.}
 \label{tab:matched}
-\input{code/results/tab_matched.tex}
+\input{tables/tab_matched.tex}
 \end{table}
 
 \subsection{The matched-cost frontier: rotations to a target fidelity}
@@ -1203,7 +1238,7 @@ $0.99$ at a $\GateSpeedup\times$ smaller budget than the best first-order orderi
 are the only schedules to reach $0.999$. Transcribed from the
 \texttt{gates\_to\_target} block of \texttt{results/summary.json}.}
 \label{tab:gates}
-\input{code/results/tab_gates.tex}
+\input{tables/tab_gates.tex}
 \end{table}
 
 \subsection{The advantage is size independent}
@@ -1254,7 +1289,7 @@ at every size, while the matrix-free reference keeps the per-instance cost modes
 to $n=\MaxN$. Transcribed from the \texttt{by\_size} block of
 \texttt{results/summary.json}.}
 \label{tab:scaling}
-\resizebox{\columnwidth}{!}{\input{code/results/tab_scaling.tex}}
+\resizebox{\columnwidth}{!}{\input{tables/tab_scaling.tex}}
 \end{table}
 
 \subsection{Instance dependence and the learned scheduler}
@@ -1295,7 +1330,7 @@ Ising families; the clique-based first-order schedules already reach it at minim
 on Heisenberg. Transcribed from the \texttt{gates\_to\_target} block of
 \texttt{results/summary.json}.}
 \label{tab:family}
-\input{code/results/tab_family.tex}
+\input{tables/tab_family.tex}
 \end{table}
 
 The learned scheduler of Sec.~\ref{sec:router_thy} exploits this structure
@@ -1449,10 +1484,13 @@ $[\,B_{a_1},[\,B_{a_2},[\dots,B_{a_k}]\dots]\,]$. Two elementary bounds control 
 tail. First, each nested commutator of order $k$ satisfies, by the triangle
 inequality $\norm{[X,Y]}\le2\norm{X}\,\norm{Y}$ applied $k-1$ times and
 sub-multiplicativity across the ordered product,
-\[
+\begin{equation*}
+\begin{split}
     \Bigl\|\,k\text{-fold commutator of the }B_a\,\Bigr\|
-    \;\le\;(2)^{\,k-1}\Bigl(\sum_a\abs{b_a}\Bigr)^{k}=2^{k-1}\mu^{k}.
-\]
+    &\;\le\;(2)^{\,k-1}\Bigl(\sum_a\abs{b_a}\Bigr)^{k}\\
+    &\;=\;2^{k-1}\mu^{k}.
+\end{split}
+\end{equation*}
 Second, the absolute sum of the scalar Magnus/BCH coefficients at order $k$ is
 dominated by the coefficients of the \emph{scalar} majorant series obtained by
 replacing every $\norm{[X,Y]}$ by $2\norm{X}\norm{Y}$; that majorant is exactly the
@@ -1463,12 +1501,15 @@ anti-Hermitian, being a real combination of commutators of Hermitian operators t
 $-\ii$), the remainder
 $\Delta^{p+1}\mathcal{R}_p(\Delta)=\sum_{k>p}\Omega_k\Delta^k$ is bounded by the tail
 of the majorant:
-\[
-    \norm{\mathcal{R}_p(\Delta)}\le\abs{\Delta}^{-(p+1)}\!\!\sum_{k>p}
-    \frac{(2\mu\abs{\Delta})^{k}}{k}
-    \;\le\;\frac{(2\mu)^{p+1}}{p+1}\sum_{j\ge0}(2\mu\abs{\Delta})^{j}
-    \;=\;\frac{(2\mu)^{p+1}}{p+1}\cdot\frac{1}{1-2\mu\abs{\Delta}},
-\]
+\begin{equation*}
+\begin{split}
+    \norm{\mathcal{R}_p(\Delta)}
+    &\le\abs{\Delta}^{-(p+1)}\!\!\sum_{k>p}
+    \frac{(2\mu\abs{\Delta})^{k}}{k}\\
+    &\le\frac{(2\mu)^{p+1}}{p+1}\sum_{j\ge0}(2\mu\abs{\Delta})^{j}\\
+    &=\frac{(2\mu)^{p+1}}{p+1}\cdot\frac{1}{1-2\mu\abs{\Delta}},
+\end{split}
+\end{equation*}
 and $1/(1-2\mu\abs{\Delta})\le e^{2\mu\abs{\Delta}}$ for $2\mu\abs{\Delta}<\log2<1$,
 giving Eq.~\eqref{eq:remainder}. The order-$1$ term is
 $\Omega_1\Delta=-\ii\Delta\sum_a B_a$ (each factor contributes its generator
@@ -1546,7 +1587,8 @@ confidence intervals $1.96\,\hat\sigma/\sqrt{N}$.
 
 \section{Software, validation, and reproducibility}
 \label{app:repro}
-The pipeline is a CPU-only Python package (\texttt{topoham}) depending on
+The pipeline is a CPU-only Python package, distributed on pip as
+\texttt{specops-cgs} (import name \texttt{topoham}), depending on
 NumPy~\cite{harris2020array}, SciPy~\cite{virtanen2020scipy},
 NetworkX~\cite{hagberg2008exploring}, scikit-learn~\cite{pedregosa2011scikit}, and
 Matplotlib. Hamiltonians are stored as Pauli term lists (\texttt{hamiltonians.py}); the
@@ -1575,22 +1617,26 @@ full provenance (seed, command, platform, package versions, runtime, peak memory
 $10^{-9}$), \texttt{error\_form\_verified} (the matrix-free error form matches the dense
 pair-commutator sum to $10^{-9}$), and \texttt{reference\_backend\_verified} (the
 matrix-free Krylov reference matches dense \texttt{expm} to $10^{-9}$ before it is used
-at scale). On the run reported here (seed $0$, Python~3.13, macOS arm64), the experiment
+at scale). On the run reported here (seed $0$, Python~3.9, macOS arm64), the experiment
 completed in $\approx\Runtime$\,s wall-clock with $\approx\PeakMem$\,MB peak memory, all
 three flags \texttt{true}. The macros, tables,
 and figures in this manuscript are generated directly from \texttt{summary.json}, so no
-number is entered by hand. The full pipeline is reproduced from the accompanying code by
+number is entered by hand. The full pipeline is reproduced from the accompanying code
+(\texttt{code/} in the submission; package \texttt{specops-cgs}) by
 \begin{verbatim}
 pip install .
 make test
 export KMP_DUPLICATE_LIB_OK=TRUE
-topoham-reproduce \
+cgs-reproduce \
   --config configs/full.yaml
 \end{verbatim}
 where \texttt{make test} checks the Pauli kernel ($10^{-9}$), the error form
 ($10^{-9}$), antithetic second-order convergence, and clique exactness, and
-\texttt{topoham-reproduce} regenerates \texttt{summary.json}, the tables, and the
-figures. All experiments are reproducible on commodity hardware.
+\texttt{cgs-reproduce} regenerates \texttt{summary.json}, the tables, and the
+figures, then syncs them into \texttt{figures/} and \texttt{tables/} used by this
+manuscript; \texttt{cgs-reproduce --quick} (equivalently
+\texttt{--config configs/smoke.yaml}) runs a seconds-scale demonstration of the
+same pipeline. All experiments are reproducible on commodity hardware.
 
 \begin{thebibliography}{99}
 \providecommand{\natexlab}[1]{#1}

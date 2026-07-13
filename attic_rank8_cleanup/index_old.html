@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zero-Overhead Cancellation of the Leading Trotter Error via Commutator-Graph Scheduling</title>
+<meta name="description" content="A single term ordering is provably impotent for first-order Trotterization; a step-alternating antithetic schedule cancels the leading commutator error and converges at second order at the identical gate budget. Quantified against exact statevector references on 144 structured Hamiltonians up to 14 qubits, with an in-browser convergence-rate demonstration.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false},{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}]})"></script>
+<style>
+  :root{
+    --bg:#fbfcfe; --panel:#ffffff; --ink:#10151c; --muted:#5b6675; --line:#e6eaf0;
+    --accent:#76b900; --accent2:#1f6feb; --accent-d:#5a8f00; --code:#eef2f7;
+    --shadow:0 1px 2px rgba(16,21,28,.06),0 8px 24px rgba(16,21,28,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent2);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code,kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  nav{position:sticky;top:0;z-index:50;background:rgba(251,252,254,.86);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{max-width:1060px;margin:0 auto;padding:11px 20px;display:flex;gap:15px;align-items:center;flex-wrap:wrap}
+  nav .brand{font-weight:700;letter-spacing:-.01em;margin-right:auto}
+  nav .brand .p{color:var(--accent-d)}
+  nav a{color:var(--muted);font-size:13.5px;font-weight:500}
+  nav a:hover{color:var(--ink);text-decoration:none}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 20px}
+  header.hero{padding:64px 20px 42px;text-align:center;background:
+    radial-gradient(1200px 400px at 50% -120px,rgba(118,185,0,.10),transparent),
+    radial-gradient(900px 360px at 80% -60px,rgba(31,111,235,.08),transparent)}
+  header.hero h1{font-size:clamp(27px,4.4vw,42px);line-height:1.14;letter-spacing:-.02em;margin:.2em auto;max-width:26ch}
+  header.hero .sub{color:var(--muted);font-size:clamp(15px,2vw,18px);max-width:74ch;margin:0 auto 8px}
+  header.hero .auth{color:var(--muted);font-size:14px;margin-top:14px}
+  .tag{display:inline-block;font-size:12px;font-weight:600;color:var(--accent-d);
+    background:rgba(118,185,0,.12);border:1px solid rgba(118,185,0,.3);border-radius:999px;padding:4px 12px;margin-bottom:14px}
+  .chips{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:28px 0 8px}
+  .chip{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 16px;box-shadow:var(--shadow);min-width:150px}
+  .chip b{display:block;font-size:21px;color:var(--accent-d);letter-spacing:-.01em}
+  .chip span{font-size:12.5px;color:var(--muted)}
+  .cta{margin-top:24px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .btn{display:inline-block;padding:10px 18px;border-radius:10px;font-weight:600;font-size:14px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+  .btn.primary{background:var(--accent);border-color:var(--accent-d);color:#10240a}
+  .btn:hover{text-decoration:none;transform:translateY(-1px)}
+  section{padding:46px 0;border-top:1px solid var(--line)}
+  section h2{font-size:25px;letter-spacing:-.01em;margin:0 0 6px}
+  section .lead{color:var(--muted);max-width:78ch;margin:0 0 22px}
+  section p{max-width:80ch}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow)}
+  .card h3{margin:.1em 0 .5em;font-size:16px}
+  .card p{margin:.2em 0;color:var(--muted);font-size:14.5px}
+  .card.math{overflow-x:auto}
+  .card.math p{color:var(--ink)}
+  ul.contrib{margin:0;padding-left:0;list-style:none;counter-reset:c}
+  ul.contrib li{position:relative;padding:13px 16px 13px 48px;background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;margin-bottom:12px;box-shadow:var(--shadow);font-size:15px}
+  ul.contrib li::before{counter-increment:c;content:counter(c);position:absolute;left:14px;top:13px;
+    width:24px;height:24px;border-radius:7px;background:var(--accent);color:#10240a;font-weight:700;
+    font-size:13px;display:flex;align-items:center;justify-content:center}
+  .thm{background:#fafdf5;border:1px solid #d6e7b8;border-left:4px solid var(--accent);border-radius:10px;padding:14px 18px;margin-bottom:14px}
+  .thm .name{font-weight:700;font-size:14px;color:var(--accent-d);margin-bottom:4px}
+  .thm .interp{color:var(--muted);font-size:13.5px;margin-top:8px;font-style:italic}
+  table{width:100%;border-collapse:collapse;font-size:14px;background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{padding:9px 12px;text-align:right;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  thead th{background:#f3f6fa;font-size:12.5px;color:var(--muted);font-weight:600}
+  tbody tr:hover{background:#f7fafd}
+  td.best{font-weight:700;color:var(--accent-d)}
+  .note{font-size:12.5px;color:var(--muted);margin-top:8px}
+  .tablewrap{overflow-x:auto}
+  pre{background:var(--code);color:#1b2330;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow-x:auto;font-size:13px;line-height:1.55}
+  pre .c{color:#6e7781}
+  pre .k{color:#0550ae}
+  /* demo */
+  .demo-shell{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:20px}
+  .demo-grid{display:grid;grid-template-columns:300px 1fr;gap:22px}
+  .ctrls label{display:block;font-size:13px;font-weight:600;margin:14px 0 4px}
+  .ctrls .val{float:right;font-weight:700;color:var(--accent-d);font-variant-numeric:tabular-nums}
+  .ctrls input[type=range]{width:100%;accent-color:var(--accent)}
+  .ctrls select,.ctrls .seg{width:100%}
+  .seg{display:flex;gap:6px;flex-wrap:wrap}
+  .seg button{flex:1;min-width:64px;padding:7px 6px;border:1px solid var(--line);background:#fff;border-radius:8px;font-size:12.5px;cursor:pointer}
+  .seg button.on{background:var(--accent);border-color:var(--accent-d);color:#10240a;font-weight:700}
+  .readout{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+  .readout div{background:#f3f6fa;border:1px solid var(--line);border-radius:9px;padding:8px 10px}
+  .readout b{display:block;font-size:18px;color:var(--ink);font-variant-numeric:tabular-nums}
+  .readout span{font-size:11.5px;color:var(--muted)}
+  canvas{width:100%;height:auto;display:block;background:#fff;border:1px solid var(--line);border-radius:10px}
+  .demo-cap{font-size:12.5px;color:var(--muted);margin-top:10px}
+  .badge{display:inline-block;font-size:11px;font-weight:600;color:var(--accent2);background:rgba(31,111,235,.1);border:1px solid rgba(31,111,235,.25);border-radius:6px;padding:2px 8px;margin-left:6px}
+  ol.refs{margin:0;padding-left:1.6em;max-width:82ch}
+  ol.refs li{font-size:.9rem;line-height:1.55;margin-bottom:11px;color:var(--ink)}
+  ol.refs li .venue{font-style:italic}
+  ol.refs li .auth{color:var(--muted)}
+  footer{padding:40px 20px 64px;color:var(--muted);font-size:13.5px;text-align:center}
+  @media(max-width:820px){.grid2,.grid3,.demo-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <span class="brand">Topo<span class="p">Ham</span></span>
+  <a href="#background">Background</a>
+  <a href="#dichotomy">Dichotomy</a>
+  <a href="#contrib">Contributions</a>
+  <a href="#theory">Guarantees</a>
+  <a href="#results">Results</a>
+  <a href="#demo">Demo</a>
+  <a href="#repro">Reproducibility</a>
+  <a href="#cite">Cite</a>
+  <a href="#references">References</a>
+</div></nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="tag">Quantum simulation · Product formulas · Matched-cost, exact-reference evaluation</span>
+    <h1>Zero-Overhead Cancellation of the Leading Trotter Error via Commutator-Graph Scheduling</h1>
+    <p class="sub">In a first-order Lie&ndash;Trotter product formula the order of the Pauli terms is free at fixed gate cost. We prove that a single ordering is <em>impotent</em>&mdash;it only re-signs the leading commutator error and cannot escape the $O(t^2/r)$ rate&mdash;and that the lever which does matter is the per-step <em>schedule</em>: a step-alternating <em>antithetic</em> schedule cancels the leading error and converges at second order, $O(t^3/r^2)$, at the <em>identical</em> $L\!\cdot\!r$ rotation count.</p>
+    <p class="auth">Molena Huynh &middot; North Carolina State University, Raleigh, North Carolina 27695, USA &middot; <a href="mailto:molena.huynh@jmp.com">molena.huynh@jmp.com</a><br>manuscript prepared for <em>Physical Review Research</em><br>part of the spectral-truncation operators (SpecOps) program for quantum computation</p>
+    <div class="chips">
+      <div class="chip"><b>2 &rarr; 4</b><span>convergence order, same gate budget</span></div>
+      <div class="chip"><b>1.40&times;</b><span>fewer rotations to fidelity 0.99</span></div>
+      <div class="chip"><b>0.999</b><span>reached by schedules; first-order does not</span></div>
+      <div class="chip"><b>144</b><span>structured instances, 4&ndash;14 qubits</span></div>
+    </div>
+    <div class="cta">
+      <a class="btn primary" href="https://thmolena.github.io/Topological-Graph-for-Hamiltonian-Simulation/submission/main.pdf">Read the manuscript (PDF)</a>
+      <a class="btn" href="#demo">Interactive convergence demo</a>
+      <a class="btn" href="#repro">Reproduce</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<div style="margin:26px 0 6px;padding:18px 20px;border:1px solid rgba(127,140,170,.32);border-left:4px solid var(--accent,#1f6feb);border-radius:8px;background:rgba(127,140,170,.06);">
+  <strong style="display:block;font-size:.74rem;letter-spacing:.13em;text-transform:uppercase;color:var(--accent,#1f6feb);margin-bottom:7px;">Abstract</strong>
+  <p style="margin:0;font-size:1.02rem;line-height:1.6;">A quantum computer is a stochastic device: the Born rule returns one bitstring per run, so every quantity a simulation reports is a statistical estimate whose structure is governed by the algebra of the operators being evolved. We introduce <strong>commutator-graph scheduling (CGS)</strong>, which doubles the convergence order of first-order Trotterization at zero gate, qubit, or depth overhead by making the leading error an explicit, estimable operator on that algebra. We recast the leading Trotter error as an exact, matrix-free operator&mdash;the <em>commutator error form</em> $E_\pi=\sum_{a<b}[h_{\pi(a)},h_{\pi(b)}]$, a signed sum of Pauli strings over the edges of the commutator graph, validated against dense exponentials to $10^{-9}$&mdash;and prove that reordering only re-signs $E_\pi$, leaving its norm exactly invariant on collision-free families, so no fixed ordering escapes the $O(t^2/r)$ rate. The genuine free parameter is the per-step <em>schedule</em>: a step-alternating <em>antithetic</em> schedule cancels $E_\pi$ and converges at $O(t^3/r^2)$ with the identical $L\!\cdot\!r$ rotations. Across <strong>144</strong> structured Hamiltonians against exact statevector references, CGS lifts the empirical rate from <strong>1.96</strong> to <strong>4.07</strong>, reaches fidelity $0.99$ with <strong>1.40&times;</strong> fewer rotations, and attains $0.999$ where first-order Trotter cannot. A matrix-free Krylov reference extends the exact benchmark to <strong>14</strong> qubits, where the order doubling is size-independent and the matched-cost speedup reaches <strong>2.06&times;</strong>. An interpretable scheduler over ten graph features selects the gate-optimal schedule per instance with <strong>93%</strong> leave-one-out accuracy.</p>
+</div>
+
+<section id="background">
+  <h2>Background and Motivation</h2>
+  <p class="lead">The free parameter in first-order Trotterization is not the ordering but the schedule; the commutator graph tells us why ordering fails and how to schedule instead.</p>
+  <p>Simulating the time evolution $e^{-\mathrm{i}Ht}$ of a quantum many-body Hamiltonian is the founding application of quantum computers (Feynman 1982; Lloyd 1996), and the product formula remains its dominant primitive. Given a Hamiltonian in Pauli form $H=\sum_{j=1}^{L} c_j P_j$, the first-order (Lie&ndash;Trotter) approximant with $r$ steps and term ordering $\pi$ is $U_{\mathrm{Trot}}(\pi)=\big(\prod_{j\in\pi} e^{-\mathrm{i}\,c_j P_j\, t/r}\big)^{r}$. Its deviation from the exact propagator is governed by the commutators of the summands, made tight and explicit by the modern commutator-scaling analysis (Childs et al., <em>Theory of Trotter Error with Commutator Scaling</em>, 2021), the theoretical anchor of this work.</p>
+  <p>The cost of a first-order schedule is exactly one rotation $e^{-\mathrm{i}c_j P_j t/r}$ per term per step, so the gate count $L\!\cdot\!r$ is <strong>independent of the ordering</strong> $\pi$, and indeed of whether that ordering varies between steps. A substantial empirical literature has asked how much reordering buys (Tranter 2019; Poulin 2015; Hastings 2015), repeatedly finding the effect modest. This work explains that ceiling and then circumvents it: we show that the ceiling is a theorem about <em>orderings</em>, and that the larger free object&mdash;the per-step <em>schedule</em>&mdash;escapes it at no additional gate cost.</p>
+  <p>The natural structure for this question is the <em>commutator graph</em> (or anticommutation graph): one node per term, with an edge between every pair of terms that anticommute. This is the same graph used in measurement grouping for variational algorithms, where a clique cover into mutually commuting sets reduces the number of measurement settings (Verteletskyi 2020; Gokhale 2020; Crawford 2021). Despite this rich structure, the empirical verdict on ordering has been consistently underwhelming, with reordering gains widely regarded as &ldquo;within noise&rdquo;; <em>why</em> a free parameter should be so impotent had not previously been explained. Our resolution is to enlarge the free degree of freedom from a single ordering to a per-step schedule $\sigma=(\pi_1,\dots,\pi_r)$, realized at the identical $L\!\cdot\!r$ rotation count. The antithetic schedule&mdash;alternating a term order with its reverse on successive steps&mdash;makes each adjacent step-pair a palindromic, symmetric product formula whose leading commutator error vanishes. The underlying mechanism is the classical symmetrization of Suzuki (Suzuki 1991; Hatano 2005); its reading as a zero-overhead <em>scheduling</em> choice that a single fixed ordering can never realize is, to our knowledge, new.</p>
+</section>
+
+<section id="dichotomy">
+  <h2>The Ordering&ndash;Scheduling Dichotomy</h2>
+  <p class="lead">A single ordering only re-signs the leading error; a step-alternating schedule cancels it. The commutator graph certifies both halves.</p>
+  <div class="grid2">
+    <div class="card math">
+      <h3>Reordering re-signs &mdash; impotence</h3>
+      <p>The leading first-order error operator is the commutator error form $E_\pi=\sum_{a<b}[h_{\pi(a)},h_{\pi(b)}]$ with $h_j=c_jP_j$. For Pauli terms it is a signed sum over the edges of the commutator graph,</p>
+      <p>$$E_\pi=\sum_{\{j,k\}\in E(\mathcal{G})}\varepsilon_{jk}(\pi)\,2c_jc_k\,(P_jP_k),$$</p>
+      <p>$\varepsilon_{jk}=\pm1$ according to which term precedes the other. <strong>Reordering only flips these signs.</strong> When the edge products $P_jP_k$ are distinct, the Hilbert&ndash;Schmidt norm of $E_\pi$ is identical for every ordering; reordering cannot reduce the error.</p>
+    </div>
+    <div class="card math">
+      <h3>Alternating cancels &mdash; the free upgrade</h3>
+      <p>Let the schedule apply $\pi$ on even steps and its reverse $\pi^{R}$ on odd steps. Each step-pair $S_{\pi^R}(\Delta)\,S_\pi(\Delta)$ is a palindrome, hence a symmetric formula whose generator has only odd powers of $\Delta=t/r$:</p>
+      <p>$$S_{\pi^R}(\Delta)\,S_\pi(\Delta)=\exp\!\big(-2\mathrm{i}\Delta H+O(\Delta^3)\big).$$</p>
+      <p>The leading $O(\Delta^2)$ commutator error <strong>cancels exactly</strong>, lifting the convergence from $O(t^2/r)$ to $O(t^3/r^2)$ at exactly the same $L\!\cdot\!r$ rotations the first-order schedule uses.</p>
+    </div>
+  </div>
+</section>
+
+<section id="contrib">
+  <h2>Principal Contributions</h2>
+  <ul class="contrib">
+    <li><strong>The commutator error form, matrix-free and certified.</strong> The exact leading-order error operator $E_\pi=\sum_{a<b}[h_{\pi(a)},h_{\pi(b)}]$ is assembled in $O(L^2 n)$ as a signed sum of Pauli strings over the commutator graph, without ever forming a $2^n\!\times\!2^n$ matrix, and validated against the dense pair-commutator sum to $10^{-9}$.</li>
+    <li><strong>An ordering-impotence theorem.</strong> Reordering only re-signs $E_\pi$; its Hilbert&ndash;Schmidt norm is exactly ordering-invariant when the edge commutators are distinct, and only a small colliding fraction is ordering-reducible otherwise. Across the 144 instances a median ordering sits within a factor 1.097 of the exact floor. No fixed ordering escapes the first-order rate&mdash;the precise form of the &ldquo;ordering is within noise&rdquo; folklore.</li>
+    <li><strong>A free second-order schedule.</strong> The antithetic schedule cancels $E_\pi$ and converges at second order at the identical gate budget; combined with the commuting-clique compression of the graph it reaches fidelity $0.99$ at 1.40&times; fewer rotations and reaches $0.999$ where first-order Trotter does not.</li>
+    <li><strong>A quantitative theory of the residual.</strong> A self-contained Baker&ndash;Campbell&ndash;Hausdorff / Magnus remainder bounds the post-cancellation error in operator norm; leading-cancellation is proved strictly more accurate than every fixed ordering at fine step size; residual minimization is placed in an NP-hard landscape with a spectral relaxation; and an unbiased shot-based estimator with a finite-sample confidence interval makes the accuracy claim empirically certifiable, not merely asymptotic.</li>
+    <li><strong>Size-independent verification.</strong> A matrix-free Krylov reference extends the exact benchmark from the dense-exponential ceiling to 14 qubits; the order doubling (first-order rate $\approx2$, antithetic rate $\approx4$) and the matched-cost speedup (2.06&times; at $n=14$) are size-independent.</li>
+    <li><strong>A learned schedule router.</strong> An interpretable logistic-regression router over ten listing-order-invariant commutator-graph features selects the gate-optimal schedule per instance with 93% leave-one-instance-out accuracy, recovering near-oracle gate efficiency by folding only the instances that need it.</li>
+  </ul>
+</section>
+
+<section id="theory">
+  <h2>Theoretical Guarantees</h2>
+  <p class="lead">Each statement is proved in full in the Methods; every proof is matrix-free and exact.</p>
+  <div class="thm">
+    <div class="name">Proposition &mdash; Rotation-count invariance</div>
+    A first-order schedule with any ordering $\pi$, and the antithetic schedule that alternates $\pi$ with its reverse, each apply exactly $L\!\cdot\!r$ single-Pauli rotations.
+    <div class="interp">The antithetic schedule is genuinely free: it spends not a single extra gate over the first-order schedule, so any accuracy it recovers is pure profit.</div>
+  </div>
+  <div class="thm">
+    <div class="name">Theorem 1 &mdash; Ordering impotence</div>
+    Reordering acts on $E_\pi$ only by flipping the signs $\varepsilon_{jk}$. Grouping by Pauli string, $\lVert E_\pi\rVert_{\mathrm{HS}}^2=2^n\sum_R(\sum_{\{j,k\}:R_{jk}=R}\varepsilon_{jk}\,2c_jc_k\widehat\omega_{jk})^2$; if every edge maps to a distinct Pauli string then $\lVert E_\pi\rVert_{\mathrm{HS}}$ is independent of $\pi$, and in general only the colliding fraction is ordering-reducible.
+    <div class="interp">On the transverse-field Ising and Heisenberg families the leading error is fully ordering-invariant; reordering cannot move it, which is why ordering heuristics are statistically indistinguishable.</div>
+  </div>
+  <div class="thm">
+    <div class="name">Theorem 2 &mdash; Antithetic cancellation and the free order upgrade</div>
+    The antithetic step-pair $M(\Delta)=S_{\pi^R}(\Delta)S_\pi(\Delta)$ is symmetric, $M(-\Delta)=M(\Delta)^{-1}$, so its generator contains only odd powers of $\Delta$ and the leading $O(\Delta^2)$ error cancels: $M(\Delta)=\exp(-2\mathrm{i}\Delta H+O(\Delta^3))$. The antithetic schedule therefore approximates $e^{-\mathrm{i}tH}$ with additive error $O(t^3/r^2)$ at exactly $L\!\cdot\!r$ rotations.
+    <div class="interp">A per-step ordering choice that a single fixed ordering cannot realize upgrades the convergence order for free.</div>
+  </div>
+  <div class="thm">
+    <div class="name">Proposition &mdash; Clique exactness</div>
+    A proper colouring of $\mathcal{G}(H)$ partitions the terms into commuting cliques; laying a clique contiguously, its rotations factor exactly, $\prod_{j\in C}e^{-\mathrm{i}\Delta h_j}=\exp(-\mathrm{i}\Delta\sum_{j\in C}h_j)$, so the schedule error depends only on inter-clique commutators.
+    <div class="interp">Low-chromatic (fast-forwardable) Hamiltonians such as Heisenberg are near-exact already at first order, so folding only adds overhead there&mdash;the decision the learned router makes.</div>
+  </div>
+</section>
+
+<section id="results">
+  <h2>Empirical Validation</h2>
+  <p class="lead">Across 144 structured instances (transverse-field Ising, Heisenberg, random molecular-like; $n\in\{4,6,8,10,12,14\}$ qubits; eight seeded draws each) against exact statevector references. Every value is generated by the package and transcribed from <code>results/summary.json</code>.</p>
+
+  <h3 style="margin:0 0 8px">Matched-cost snapshot at a reference budget</h3>
+  <p class="note" style="margin:0 0 12px">At $r=6$ Trotter steps ($t=1.0$), a mean of 118 rotations. The first-order schedules share this identical budget; the antithetic fold matches it and still reaches higher fidelity. &ldquo;rate $p$&rdquo; is the fitted convergence exponent (mean per-instance log&ndash;log slope of infidelity vs.&nbsp;$r$).</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>schedule</th><th>order</th><th>fidelity</th><th>rotations</th><th>rate $p$</th></tr></thead>
+    <tbody>
+      <tr><td>best first-order ordering</td><td>1st</td><td>0.9403</td><td>118</td><td>1.96</td></tr>
+      <tr><td><strong>antithetic (2nd, free)</strong></td><td>2nd</td><td class="best">0.9589</td><td>118</td><td class="best">4.07</td></tr>
+      <tr><td>symmetric (2nd, Strang)</td><td>2nd</td><td>&mdash;</td><td>&mdash;</td><td>4.03</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">At the identical 118-rotation budget the antithetic schedule reaches mean fidelity 0.9589 against 0.9403 for the best first-order ordering&mdash;a reduction of mean infidelity from 0.0597 to 0.0411 (a factor 1.5), for free. The rate column shows the same effect as a convergence exponent: $\approx2$ for every first-order schedule and $\approx4$ for both folds&mdash;a clean doubling of the convergence order.</p>
+
+  <h3 style="margin:26px 0 8px">Rotations to a target fidelity <span class="badge">matched-cost efficiency</span></h3>
+  <p class="note" style="margin:0 0 12px">Realised rotation count at which the mean fidelity over the 144 instances first reaches each target; &ldquo;&mdash;&rdquo; marks a target not reached within the swept step grid.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>schedule</th><th>$F\!\ge\!0.99$</th><th>$F\!\ge\!0.999$</th></tr></thead>
+    <tbody>
+      <tr><td>best first-order ordering</td><td>315</td><td>&mdash;</td></tr>
+      <tr><td><strong>antithetic (2nd, free)</strong></td><td class="best">236</td><td class="best">315</td></tr>
+      <tr><td>symmetric (2nd, Strang)</td><td>225</td><td>300</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">To reach fidelity 0.99 the best first-order ordering needs 315 rotations, the antithetic schedule 236 and the symmetric schedule 225&mdash;a 1.40&times; reduction. To reach 0.999, <strong>no first-order schedule succeeds within the swept budget</strong>, while the antithetic and symmetric schedules reach it at 315 and 300 rotations. Because the convergence rates differ, the matched-cost gap widens with budget.</p>
+
+  <h3 style="margin:26px 0 8px">Size independence via a matrix-free Krylov reference</h3>
+  <p class="note">A dense matrix exponential is tractable only to modest $n$. A matrix-free Krylov reference, cross-checked against dense <code>expm</code> to $10^{-9}$, extends the exact benchmark to $n=14$ qubits. Across $n\in\{4,\dots,14\}$ the fitted rates stay at $\approx1.94$ (first-order) and $\approx4.06$ (antithetic), so the order doubling is size-independent, and the matched-cost speedup reaches <strong>2.06&times;</strong> at $n=14$.</p>
+
+  <h3 style="margin:26px 0 8px">Ordering is impotent; folding is learnable</h3>
+  <p>Sampling orderings per instance and forming the exact leading-error spectral norm, a median ordering sits within a factor <strong>1.097</strong> of the per-instance minimum and the coefficient ordering within 1.074; the fully matrix-free Hilbert&ndash;Schmidt surrogate moves within 1.004, and the worst single instance reaches only 1.92. On the transverse-field Ising and Heisenberg families <strong>every</strong> anticommuting edge maps to a distinct Pauli string, so the leading error is exactly ordering-invariant; only the dense molecular-like family has any ordering-reducible part (0.98 invariant). The interpretable router exploits exactly this structure: trained leave-one-instance-out it attains <strong>93%</strong> accuracy against the per-instance oracle and recovers near-oracle gate efficiency&mdash;on the 92 instances where every fixed schedule reaches the target it needs 114.0 rotations on average against the oracle's 112.4&mdash;routing fast-forwardable instances to the cheap first-order schedule and hard instances to a fold.</p>
+</section>
+
+<section id="demo">
+  <h2>Interactive Convergence Demonstration</h2>
+  <p class="lead">A self-contained, client-side statevector simulation that reproduces the paper's central figure in real time: first-order schedules collapse onto a single $\propto r^{-2}$ line (the visual proof of impotence), while the antithetic schedule&mdash;at the identical rotation count&mdash;follows $\propto r^{-4}$. It illustrates the proven behaviour on single instances; it is not a re-run of the 144-instance benchmark.</p>
+  <div class="demo-shell">
+    <div class="demo-grid">
+      <div class="ctrls">
+        <label>Hamiltonian family</label>
+        <div class="seg" id="famSeg">
+          <button data-fam="tfim" class="on">TF Ising</button>
+          <button data-fam="heis">Heisenberg</button>
+          <button data-fam="mol">Molecular-like</button>
+        </div>
+
+        <label>Qubits $n$ <span class="val" id="nVal">5</span></label>
+        <input type="range" id="nSlider" min="3" max="6" step="1" value="5">
+
+        <label>Evolution time $t$ <span class="val" id="tVal">1.0</span></label>
+        <input type="range" id="tSlider" min="0.5" max="3" step="0.1" value="1.0">
+
+        <label>Schedule highlighted</label>
+        <div class="seg" id="schSeg">
+          <button data-sch="first" class="on">first-order</button>
+          <button data-sch="anti">antithetic</button>
+          <button data-sch="sym">symmetric</button>
+        </div>
+
+        <div class="readout">
+          <div><b id="outSlopeFirst">&mdash;</b><span>first-order rate $p$ ($\to 2$)</span></div>
+          <div><b id="outSlopeAnti">&mdash;</b><span>antithetic rate $p$ ($\to 4$)</span></div>
+          <div><b id="outGF">&mdash;</b><span>rotations to $F\!\ge\!0.99$, first-order</span></div>
+          <div><b id="outGA">&mdash;</b><span>rotations to $F\!\ge\!0.99$, antithetic</span></div>
+        </div>
+      </div>
+      <div>
+        <canvas id="cv" width="680" height="430" aria-label="Infidelity versus Trotter steps for first-order, antithetic, and symmetric schedules"></canvas>
+        <p class="demo-cap">Infidelity $1-\mathcal{F}$ (log) against Trotter steps $r$ (log), computed in-browser from the exact rotation $e^{-\mathrm{i}\theta P}=\cos\theta\,I-\mathrm{i}\sin\theta\,P$ against a converged symmetric reference. The three first-order schedules (cool, dashed) lie on top of one another at slope $\approx 2$&mdash;reordering does not move the curve&mdash;while the antithetic fold (vermillion), using the <em>identical</em> rotation count at each $r$, and the symmetric fold (green) follow slope $\approx 4$. Guides $\propto r^{-2}$ and $\propto r^{-4}$ are shown.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="significance">
+  <h2>Significance and Boundaries</h2>
+  <p class="lead">Why a matched-cost schedule matters, with the study's limits held in full view.</p>
+  <p>For first-order formulas the schedule is genuinely free&mdash;it changes no gate, qubit, or depth count&mdash;so the difference between an $O(t^2/r)$ and an $O(t^3/r^2)$ method at fixed cost is the difference between reaching and not reaching a target, as the unreachable $0.999$ column above shows. The commutator graph supplies both halves of the recommendation at no extra cost: it certifies when ordering cannot help, and its clique colouring tells the learned router which instances to fold and which to leave alone. The mechanism, palindromic symmetrization, is classical (Suzuki 1991); the contribution is the framing&mdash;that the lever is the schedule, that a fixed ordering provably cannot realize it&mdash;together with the matched-cost quantification and the learned selector.</p>
+  <p>The boundaries are stated, not omitted. <strong>(i)</strong> The second-order advantage is a small-step-size effect with an honest crossover: at coarse steps the antithetic fold can be worse than a good first-order ordering. <strong>(ii)</strong> Systems are bounded ($n\le 14$) because an exact statevector or Krylov reference must be formed; the convergence-rate argument is, however, size-independent. <strong>(iii)</strong> Families are synthetic/structured proxies, not production-mapped molecular Hamiltonians. <strong>(iv)</strong> Cost is the realised rotation count, ignoring rotation synthesis and connectivity. <strong>(v)</strong> All results are classical CPU statevector simulations with no hardware validation, single-author. What is offered is a clean, reproducible characterization of a free, second-order schedule and a proof that a single ordering cannot match it&mdash;not a claim of hardware advantage.</p>
+</section>
+
+<section id="repro">
+  <h2>Reproducibility</h2>
+  <p class="lead">A pip-installable artifact and an audited path from a clean checkout to the identical numbers.</p>
+  <p>The package (pip distribution <code>specops-cgs</code>, import name <code>topoham</code>; CPU-only; numpy / scipy / networkx / scikit-learn / matplotlib) lives at <code>submission/code</code> behind a single end-to-end entry point. Every reported number flows from one authoritative artifact, <code>results/summary.json</code>, and is generated into LaTeX macros and table fragments that the manuscript inputs directly. Three integrity gates enforce the discipline before any number is emitted: the fast Pauli-rotation kernel is cross-checked against dense <code>scipy.linalg.expm</code> to $10^{-9}$; the matrix-free commutator error form is cross-checked against the dense pair-commutator sum to $10^{-9}$; and the matrix-free Krylov reference is cross-checked against dense <code>expm</code> to $10^{-9}$.</p>
+  <pre><span class="c"># From submission/code</span>
+pip install specops-cgs   <span class="c"># or: pip install .  (CPU-only)</span>
+make test                 <span class="c"># Pauli kernel (1e-9), error-form (1e-9), antithetic 2nd-order, clique exactness</span>
+export KMP_DUPLICATE_LIB_OK=TRUE
+cgs-reproduce --config configs/full.yaml   <span class="c"># summary.json, macros, tables, figures</span>
+make audit                <span class="c"># readiness gate: traceable numbers, integrity flags, no forbidden claims</span></pre>
+  <p class="note">The run is fully determined by seeded draws; the reported scale (<code>configs/full.yaml</code>) is 144 instances across three families and six sizes $n\in\{4,6,8,10,12,14\}$ with eight seeds each, time $t=1.0$, step grid $\{1,2,4,6,8,12,16,24\}$, using the matrix-free Krylov reference backend. Runtime and memory are logged per benchmark, and all experiments run on commodity CPU hardware. The interactive demonstration above re-implements the same exact single-Pauli rotation in vanilla JavaScript, so the math on this page matches the math in the package.</p>
+</section>
+
+<section id="cite">
+  <h2>Cite this work</h2>
+  <p class="lead">If you use this software or its results, please cite the manuscript.</p>
+  <pre><span class="c">% BibTeX</span>
+@article{huynh2026topoham,
+  title   = {Zero-Overhead Cancellation of the Leading Trotter Error via Commutator-Graph Scheduling},
+  author  = {Huynh, Molena},
+  year    = {2026},
+  note    = {Part of the spectral-truncation operators (SpecOps) program},
+}</pre>
+</section>
+
+<section id="references">
+  <h2>Related Work and References</h2>
+  <p class="lead">The theoretical anchor of this work is the commutator-scaling analysis of Trotter error by Childs, Su, Tran, Wiebe, and Zhu (<em>Theory of Trotter Error with Commutator Scaling</em>, 2021); the antithetic upgrade is the classical Suzuki&ndash;Hatano product-formula symmetrization (Suzuki 1991; Hatano and Suzuki 2005) reframed as a free per-step schedule. The empirical ceiling we explain is documented in the ordering literature for electronic-structure simulation (Tranter, Love, Mintert, and Wiebe 2019; Poulin et al. 2015; Hastings et al. 2015), and the commutator graph itself is borrowed from measurement grouping in variational algorithms (Verteletskyi, Yen, and Izmaylov 2020; Gokhale et al. 2020). The full bibliography of the manuscript follows.</p>
+  <ol class="refs">
+    <li><span class="auth">R. P. Feynman.</span> &ldquo;Simulating physics with computers.&rdquo; <span class="venue">International Journal of Theoretical Physics</span> 1982. <a href="https://doi.org/10.1007/BF02650179" target="_blank" rel="noreferrer">doi:10.1007/BF02650179</a></li>
+    <li><span class="auth">S. Lloyd.</span> &ldquo;Universal quantum simulators.&rdquo; <span class="venue">Science</span> 1996. <a href="https://doi.org/10.1126/science.273.5278.1073" target="_blank" rel="noreferrer">doi:10.1126/science.273.5278.1073</a></li>
+    <li><span class="auth">H. F. Trotter.</span> &ldquo;On the product of semi-groups of operators.&rdquo; <span class="venue">Proceedings of the American Mathematical Society</span> 1959. <a href="https://doi.org/10.1090/S0002-9939-1959-0108732-6" target="_blank" rel="noreferrer">doi:10.1090/S0002-9939-1959-0108732-6</a></li>
+    <li><span class="auth">M. Suzuki.</span> &ldquo;General theory of fractal path integrals with applications to many-body theories and statistical physics.&rdquo; <span class="venue">Journal of Mathematical Physics</span> 1991. <a href="https://doi.org/10.1063/1.529425" target="_blank" rel="noreferrer">doi:10.1063/1.529425</a></li>
+    <li><span class="auth">A. M. Childs, Y. Su, M. C. Tran, N. Wiebe, and S. Zhu.</span> &ldquo;Theory of Trotter error with commutator scaling.&rdquo; <span class="venue">Physical Review X</span> 2021. <a href="https://doi.org/10.1103/PhysRevX.11.011020" target="_blank" rel="noreferrer">doi:10.1103/PhysRevX.11.011020</a></li>
+    <li><span class="auth">A. M. Childs, D. Maslov, Y. Nam, N. J. Ross, and Y. Su.</span> &ldquo;Toward the first quantum simulation with quantum speedup.&rdquo; <span class="venue">Proceedings of the National Academy of Sciences</span> 2018. <a href="https://doi.org/10.1073/pnas.1801723115" target="_blank" rel="noreferrer">doi:10.1073/pnas.1801723115</a></li>
+    <li><span class="auth">N. Hatano and M. Suzuki.</span> &ldquo;Finding exponential product formulas of higher orders.&rdquo; <span class="venue">Lecture Notes in Physics</span> 2005. <a href="https://doi.org/10.1007/11526216_2" target="_blank" rel="noreferrer">doi:10.1007/11526216_2</a></li>
+    <li><span class="auth">A. M. Childs, A. Ostrander, and Y. Su.</span> &ldquo;Faster quantum simulation by randomization.&rdquo; <span class="venue">Quantum</span> 2019. <a href="https://doi.org/10.22331/q-2019-09-02-182" target="_blank" rel="noreferrer">doi:10.22331/q-2019-09-02-182</a></li>
+    <li><span class="auth">E. Campbell.</span> &ldquo;Random compiler for fast Hamiltonian simulation.&rdquo; <span class="venue">Physical Review Letters</span> 2019. <a href="https://doi.org/10.1103/PhysRevLett.123.070503" target="_blank" rel="noreferrer">doi:10.1103/PhysRevLett.123.070503</a></li>
+    <li><span class="auth">D. Poulin, M. B. Hastings, D. Wecker, N. Wiebe, A. C. Doherty, and M. Troyer.</span> &ldquo;The Trotter step size required for accurate quantum simulation of quantum chemistry.&rdquo; <span class="venue">Quantum Information &amp; Computation</span> 2015.</li>
+    <li><span class="auth">M. B. Hastings, D. Wecker, B. Bauer, and M. Troyer.</span> &ldquo;Improving quantum algorithms for quantum chemistry.&rdquo; <span class="venue">Quantum Information &amp; Computation</span> 2015.</li>
+    <li><span class="auth">V. Verteletskyi, T.-C. Yen, and A. F. Izmaylov.</span> &ldquo;Measurement optimization in the variational quantum eigensolver using a minimum clique cover.&rdquo; <span class="venue">The Journal of Chemical Physics</span> 2020. <a href="https://doi.org/10.1063/1.5141458" target="_blank" rel="noreferrer">doi:10.1063/1.5141458</a></li>
+    <li><span class="auth">P. Gokhale, O. Angiuli, Y. Ding, K. Gui, T. Tomesh, M. Suchara, M. Martonosi, and F. T. Chong.</span> &ldquo;$O(N^3)$ measurement cost for variational quantum eigensolver on molecular Hamiltonians.&rdquo; <span class="venue">IEEE Transactions on Quantum Engineering</span> 2020. <a href="https://doi.org/10.1109/TQE.2020.3035814" target="_blank" rel="noreferrer">doi:10.1109/TQE.2020.3035814</a></li>
+    <li><span class="auth">O. Crawford, B. van Straaten, D. Wang, T. Parks, E. Campbell, and S. Brierley.</span> &ldquo;Efficient quantum measurement of Pauli operators in the presence of finite sampling error.&rdquo; <span class="venue">Quantum</span> 2021. <a href="https://doi.org/10.22331/q-2021-01-20-385" target="_blank" rel="noreferrer">doi:10.22331/q-2021-01-20-385</a></li>
+    <li><span class="auth">A. Tranter, P. J. Love, F. Mintert, and N. Wiebe.</span> &ldquo;Ordering of Trotterization: Impact on errors in quantum simulation of electronic structure.&rdquo; <span class="venue">Entropy</span> 2019. <a href="https://doi.org/10.3390/e21121218" target="_blank" rel="noreferrer">doi:10.3390/e21121218</a></li>
+    <li><span class="auth">F. Pedregosa, G. Varoquaux, A. Gramfort, et al.</span> &ldquo;Scikit-learn: Machine learning in Python.&rdquo; <span class="venue">Journal of Machine Learning Research</span> 2011.</li>
+    <li><span class="auth">S. B. Bravyi and A. Yu. Kitaev.</span> &ldquo;Fermionic quantum computation.&rdquo; <span class="venue">Annals of Physics</span> 2002. <a href="https://doi.org/10.1006/aphy.2002.6254" target="_blank" rel="noreferrer">doi:10.1006/aphy.2002.6254</a></li>
+    <li><span class="auth">J. D. Whitfield, J. Biamonte, and A. Aspuru-Guzik.</span> &ldquo;Simulation of electronic structure Hamiltonians using quantum computers.&rdquo; <span class="venue">Molecular Physics</span> 2011. <a href="https://doi.org/10.1080/00268976.2011.552441" target="_blank" rel="noreferrer">doi:10.1080/00268976.2011.552441</a></li>
+    <li><span class="auth">C. R. Harris, K. J. Millman, S. J. van der Walt, et al.</span> &ldquo;Array programming with NumPy.&rdquo; <span class="venue">Nature</span> 2020. <a href="https://doi.org/10.1038/s41586-020-2649-2" target="_blank" rel="noreferrer">doi:10.1038/s41586-020-2649-2</a></li>
+    <li><span class="auth">P. Virtanen, R. Gommers, T. E. Oliphant, et al.</span> &ldquo;SciPy 1.0: fundamental algorithms for scientific computing in Python.&rdquo; <span class="venue">Nature Methods</span> 2020. <a href="https://doi.org/10.1038/s41592-019-0686-2" target="_blank" rel="noreferrer">doi:10.1038/s41592-019-0686-2</a></li>
+    <li><span class="auth">A. A. Hagberg, D. A. Schult, and P. J. Swart.</span> &ldquo;Exploring network structure, dynamics, and function using NetworkX.&rdquo; <span class="venue">Proceedings of the 7th Python in Science Conference</span> 2008.</li>
+  </ol>
+</section>
+
+</main>
+
+<footer>
+  Zero-Overhead Cancellation of the Leading Trotter Error via Commutator-Graph Scheduling &middot; Molena Huynh &middot; North Carolina State University &middot; <a href="mailto:molena.huynh@jmp.com">molena.huynh@jmp.com</a> &middot;
+  manuscript prepared for <em>Physical Review Research</em>. Numbers generated from <code>results/summary.json</code>; no value entered by hand.
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  // ---------- Exact statevector kernel (complex amplitudes as Float64 re/im) ----------
+  // Pauli encoded per-qubit X/Z bits. I=(0,0) X=(1,0) Z=(0,1) Y=(1,1).
+  function applyPauli(re, im, n, xbits, zbits){
+    const dim = 1<<n;
+    const outRe = new Float64Array(dim), outIm = new Float64Array(dim);
+    let xmask=0;
+    for(let q=0;q<n;q++) if(xbits[q]) xmask |= (1<<q);
+    for(let s=0;s<dim;s++){
+      const t = s ^ xmask;
+      let zpar=0, ypar=0;
+      for(let q=0;q<n;q++){
+        if(zbits[q] && ((s>>q)&1)) zpar ^= 1;
+        if(xbits[q] && zbits[q]) ypar++;
+      }
+      let pr = (zpar? -1:1);
+      const k = ypar & 3;                 // (-i)^{#Y}
+      let mr=1, mi=0;
+      if(k===1){mr=0;mi=-1;} else if(k===2){mr=-1;mi=0;} else if(k===3){mr=0;mi=1;}
+      const fr = pr*mr, fi = pr*mi;
+      outRe[t] += fr*re[s] - fi*im[s];
+      outIm[t] += fr*im[s] + fi*re[s];
+    }
+    return [outRe,outIm];
+  }
+  // e^{-i theta P}|psi> = cos|psi> - i sin (P|psi>)
+  function rotate(re, im, n, P, theta){
+    const c=Math.cos(theta), s=Math.sin(theta);
+    const [pr,pi]=applyPauli(re,im,n,P.x,P.z);
+    const dim=1<<n;
+    const nr=new Float64Array(dim), ni=new Float64Array(dim);
+    for(let i=0;i<dim;i++){
+      nr[i] = c*re[i] + s*pi[i];
+      ni[i] = c*im[i] - s*pr[i];
+    }
+    return [nr,ni];
+  }
+  // ---------- Hamiltonian families ----------
+  function mkP(n){return {x:new Uint8Array(n), z:new Uint8Array(n)};}
+  function rngFactory(seed){let s=seed>>>0; return function(){s=(s*1664525+1013904223)>>>0; return s/4294967296;};}
+  function buildHam(fam, n, seed){
+    const rnd=rngFactory(seed*97+13), terms=[];
+    function add(c, setup){const P=mkP(n); setup(P); const supp=[]; for(let q=0;q<n;q++) if(P.x[q]||P.z[q]) supp.push(q); terms.push({c:c,P:P,supp:supp});}
+    if(fam==='tfim'){
+      for(let q=0;q<n-1;q++) add(-1.0,P=>{P.z[q]=1;P.z[q+1]=1;});
+      for(let q=0;q<n;q++)   add(-1.0,P=>{P.x[q]=1;});
+    } else if(fam==='heis'){
+      for(let q=0;q<n-1;q++){
+        add(1.0,P=>{P.x[q]=1;P.x[q+1]=1;});
+        add(1.0,P=>{P.x[q]=1;P.z[q]=1;P.x[q+1]=1;P.z[q+1]=1;});
+        add(1.0,P=>{P.z[q]=1;P.z[q+1]=1;});
+      }
+    } else { // molecular-like: random local 2-body
+      const m = 2*n;
+      for(let i=0;i<m;i++){
+        const c=(rnd()*2-1);
+        const a=Math.floor(rnd()*n); let b=Math.floor(rnd()*n); if(b===a) b=(b+1)%n;
+        add(c, P=>{
+          const pa=1+Math.floor(rnd()*3), pb=1+Math.floor(rnd()*3);
+          if(pa===1||pa===3)P.x[a]=1; if(pa===2||pa===3)P.z[a]=1;
+          if(pb===1||pb===3)P.x[b]=1; if(pb===2||pb===3)P.z[b]=1;
+        });
+      }
+    }
+    return terms;
+  }
+  // ---------- commutation parity (O(n)) ----------
+  function anticommute(A,B,n){
+    let k=0;
+    for(let q=0;q<n;q++){
+      const ax=A.x[q],az=A.z[q],bx=B.x[q],bz=B.z[q];
+      if(((ax&bz)^(az&bx))&1) k^=1;
+    }
+    return k===1;
+  }
+  // ---------- clique (commuting colour) ordering: greedy largest-first ----------
+  function cliqueOrder(terms, n){
+    const L=terms.length, color=new Array(L).fill(-1);
+    const deg=terms.map((t,i)=>{let d=0;for(let j=0;j<L;j++) if(j!==i&&anticommute(terms[i].P,terms[j].P,n))d++;return d;});
+    const verts=[...Array(L).keys()].sort((a,b)=>deg[b]-deg[a] || a-b);
+    for(const v of verts){
+      const used=new Set();
+      for(let j=0;j<L;j++) if(color[j]>=0 && anticommute(terms[v].P,terms[j].P,n)) used.add(color[j]);
+      let c=0; while(used.has(c)) c++; color[v]=c;
+    }
+    const idx=[...Array(L).keys()];
+    idx.sort((a,b)=> (color[a]-color[b]) || (Math.abs(terms[b].c)-Math.abs(terms[a].c)) || a-b);
+    return idx;
+  }
+  // ---------- schedules ----------
+  function plusState(n){const dim=1<<n; const a=1/Math.sqrt(dim); const re=new Float64Array(dim).fill(a); const im=new Float64Array(dim); return [re,im];}
+  function scheduleState(terms, base, n, t, r, fold){
+    let re,im; [re,im]=plusState(n); const dt=t/r; let gates=0;
+    const rev=[...base].reverse();
+    for(let step=0;step<r;step++){
+      if(fold==='sym'){
+        for(const k of base){const T=terms[k];[re,im]=rotate(re,im,n,T.P,T.c*dt*0.5);gates++;}
+        for(const k of rev){const T=terms[k];[re,im]=rotate(re,im,n,T.P,T.c*dt*0.5);gates++;}
+      } else {
+        const seq = (fold==='anti' && (step%2===1)) ? rev : base;
+        for(const k of seq){const T=terms[k];[re,im]=rotate(re,im,n,T.P,T.c*dt);gates++;}
+      }
+    }
+    return [[re,im],gates];
+  }
+  // converged reference: symmetric fold at large R (2nd order; ~1e-12 here)
+  function exactState(terms, base, n, t){
+    const [st]=scheduleState(terms, base, n, t, 768, 'sym');
+    return st;
+  }
+  function fidelity(a, b){
+    let rr=0, ii=0;
+    for(let i=0;i<a[0].length;i++){ rr += a[0][i]*b[0][i]+a[1][i]*b[1][i]; ii += a[0][i]*b[1][i]-a[1][i]*b[0][i]; }
+    return rr*rr+ii*ii;
+  }
+  function linfitSlope(xs, ys){
+    const n=xs.length; let sx=0,sy=0,sxx=0,sxy=0;
+    for(let i=0;i<n;i++){sx+=xs[i];sy+=ys[i];sxx+=xs[i]*xs[i];sxy+=xs[i]*ys[i];}
+    return (n*sxy - sx*sy)/(n*sxx - sx*sx);
+  }
+  function slopeOf(curve){
+    const pts=curve.filter(p=>p.inf>1e-9 && p.inf<0.4 && p.r>=4);
+    if(pts.length<2) return NaN;
+    return -linfitSlope(pts.map(p=>Math.log(p.r)), pts.map(p=>Math.log(p.inf)));
+  }
+  function gatesToTarget(curve, target){
+    for(const p of curve){ if(1-p.inf>=target) return p.g; }
+    return null;
+  }
+  // ---------- state ----------
+  const S={fam:'tfim', n:5, t:1.0, sch:'first'};
+  const RS=[1,2,4,6,8,12,16,24];
+  const FOLDS=[['first','#1f6feb',[6,4]],['anti','#D55E00',[]],['sym','#009E73',[]]];
+  const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+
+  function compute(){
+    const terms=buildHam(S.fam,S.n,7);
+    const base=cliqueOrder(terms,S.n);
+    const ref=exactState(terms,base,S.n,S.t);
+    const curves={};
+    for(const [fold] of FOLDS){
+      curves[fold]=RS.map(r=>{const [st,g]=scheduleState(terms,base,S.n,S.t,r,fold); return {r:r,g:g,inf:Math.max(1e-12,1-fidelity(ref,st))};});
+    }
+    return {curves, L:terms.length};
+  }
+
+  function draw(){
+    const D=compute();
+    const sf=slopeOf(D.curves.first), sa=slopeOf(D.curves.anti);
+    const fmtSlope = x => isNaN(x) ? 'exact' : x.toFixed(2);
+    document.getElementById('outSlopeFirst').textContent=fmtSlope(sf);
+    document.getElementById('outSlopeAnti').textContent=fmtSlope(sa);
+    const gf=gatesToTarget(D.curves.first,0.99), ga=gatesToTarget(D.curves.anti,0.99);
+    document.getElementById('outGF').textContent= gf!==null? gf : '>'+D.curves.first[RS.length-1].g;
+    document.getElementById('outGA').textContent= ga!==null? ga : '>'+D.curves.anti[RS.length-1].g;
+
+    const W=cv.width, H=cv.height;
+    ctx.clearRect(0,0,W,H);
+    const padL=58, padR=18, padT=16, padB=34;
+    const x0=padL, x1=W-padR, y0=padT, y1=H-padB;
+    const rMin=1, rMax=24, logMin=-5, logMax=0;       // y = log10(infidelity)
+    const lr = r => Math.log(r), lrMin=Math.log(rMin), lrMax=Math.log(rMax);
+    function px(r){return x0+(x1-x0)*((lr(r)-lrMin)/(lrMax-lrMin));}
+    function py(inf){const v=Math.log10(inf); return y1-(y1-y0)*((v-logMin)/(logMax-logMin));}
+    // grid + y labels (decades)
+    ctx.strokeStyle="#eef2f7"; ctx.fillStyle="#5b6675"; ctx.font="11px -apple-system,sans-serif"; ctx.lineWidth=1;
+    for(let d=logMin; d<=logMax; d++){
+      const yy=py(Math.pow(10,d));
+      ctx.beginPath();ctx.moveTo(x0,yy);ctx.lineTo(x1,yy);ctx.stroke();
+      ctx.fillText("10"+(d<0?String(d):("+"+d)), 14, yy+4);
+    }
+    for(const r of [1,2,4,8,16,24]){ ctx.fillText(String(r), px(r)-5, y1+16); }
+    ctx.fillStyle="#10151c"; ctx.font="12px -apple-system,sans-serif";
+    ctx.fillText("infidelity  1 - F   (log)", 8, y0-2);
+    ctx.fillText("Trotter steps r (log)", x1-118, y1+30);
+    // slope guides r^-2 and r^-4 anchored at r=4
+    ctx.setLineDash([3,3]); ctx.strokeStyle="#c4ccd6"; ctx.lineWidth=1;
+    for(const [p,anchor] of [[2,3e-2],[4,3e-2]]){
+      ctx.beginPath();
+      let first=true;
+      for(const r of [4,24]){ const inf=anchor*Math.pow(r/4,-p); const X=px(r),Y=py(inf); first?ctx.moveTo(X,Y):ctx.lineTo(X,Y); first=false;}
+      ctx.stroke();
+      const inf=anchor*Math.pow(24/4,-p);
+      ctx.fillStyle="#9aa3ad"; ctx.font="10px -apple-system";
+      ctx.fillText("r^-"+p, px(24)-26, py(inf)-3);
+    }
+    ctx.setLineDash([]);
+    // curves
+    for(const [fold,color,dash] of FOLDS){
+      const curve=D.curves[fold];
+      ctx.strokeStyle=color; ctx.lineWidth=(fold===S.sch)?3.0:1.8; ctx.setLineDash(dash);
+      ctx.globalAlpha=(S.sch==='first'||fold===S.sch||fold!=='first')?1:0.6;
+      ctx.beginPath();
+      curve.forEach((p,i)=>{const X=px(p.r),Y=py(p.inf); i?ctx.lineTo(X,Y):ctx.moveTo(X,Y);});
+      ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle=color;
+      curve.forEach(p=>{ctx.beginPath();ctx.arc(px(p.r),py(p.inf),(fold===S.sch)?3.2:2.2,0,7);ctx.fill();});
+    }
+    ctx.globalAlpha=1;
+    // legend
+    const lg=[['first-order','#1f6feb'],['antithetic (free)','#D55E00'],['symmetric','#009E73']];
+    let lx=x0+10, ly=y0+12;
+    ctx.font="11px -apple-system,sans-serif";
+    lg.forEach(([name,color],i)=>{
+      ctx.strokeStyle=color; ctx.lineWidth=2.4; ctx.beginPath(); ctx.moveTo(lx, ly+i*15); ctx.lineTo(lx+18, ly+i*15); ctx.stroke();
+      ctx.fillStyle="#10151c"; ctx.fillText(name, lx+24, ly+i*15+4);
+    });
+  }
+
+  // ---------- controls ----------
+  function seg(id, key, attr){
+    document.getElementById(id).addEventListener('click',e=>{
+      const b=e.target.closest('button'); if(!b)return;
+      [...e.currentTarget.children].forEach(c=>c.classList.remove('on'));
+      b.classList.add('on'); S[key]=b.getAttribute(attr); draw();
+    });
+  }
+  seg('famSeg','fam','data-fam');
+  seg('schSeg','sch','data-sch');
+  function slider(id,key,labId,fix){
+    const el=document.getElementById(id);
+    el.addEventListener('input',()=>{S[key]=Number(el.value);
+      document.getElementById(labId).textContent=fix?Number(el.value).toFixed(1):el.value; draw();});
+  }
+  slider('nSlider','n','nVal',false);
+  slider('tSlider','t','tVal',true);
+  draw();
+})();
+</script>
+</body>
+</html>
