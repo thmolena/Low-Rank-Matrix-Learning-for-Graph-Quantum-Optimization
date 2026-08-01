@@ -1,4 +1,4 @@
-# Source-Disjoint Audit of Four-Anchor Residual Interpolation
+# A Source-Disjoint Audit of QR-Anchor-Gated Residual Transfer for Depth-Two QAOA
 
 This repository contains a reproducible conditional/negative study of a
 four-query surrogate for finite-grid, depth-two MaxCut QAOA.
