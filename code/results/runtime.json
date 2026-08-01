@@ -1,0 +1,140 @@
+{
+  "anchors": [
+    83,
+    211,
+    246,
+    23
+  ],
+  "platform": "macOS-26.6-arm64-arm-64bit-Mach-O",
+  "python": "3.13.12",
+  "rows": [
+    {
+      "candidate_count": 16,
+      "checksum": 9.012860256849002,
+      "depth_two_queries": 16,
+      "maximum_absolute_error": 0.0,
+      "maximum_seconds": 0.00300225,
+      "median_seconds": 0.00290025,
+      "method": "exhaustive_grid",
+      "minimum_seconds": 0.0028705000000000002,
+      "repeats": 7,
+      "surface_rmse": 0.0
+    },
+    {
+      "candidate_count": 16,
+      "checksum": 9.012860256849002,
+      "depth_two_queries": 4,
+      "maximum_absolute_error": 1.1102230246251565e-16,
+      "maximum_seconds": 0.0008207500000000001,
+      "median_seconds": 0.0007594170000000001,
+      "method": "four_anchor_transfer",
+      "minimum_seconds": 0.000746167,
+      "repeats": 7,
+      "surface_rmse": 6.359601310784502e-17
+    },
+    {
+      "candidate_count": 32,
+      "checksum": 18.417287480924962,
+      "depth_two_queries": 32,
+      "maximum_absolute_error": 0.0,
+      "maximum_seconds": 0.005820541,
+      "median_seconds": 0.0058053340000000005,
+      "method": "exhaustive_grid",
+      "minimum_seconds": 0.0057081250000000005,
+      "repeats": 7,
+      "surface_rmse": 0.0
+    },
+    {
+      "candidate_count": 32,
+      "checksum": 18.417287480924962,
+      "depth_two_queries": 4,
+      "maximum_absolute_error": 1.1102230246251565e-16,
+      "maximum_seconds": 0.0008935000000000001,
+      "median_seconds": 0.0007757080000000001,
+      "method": "four_anchor_transfer",
+      "minimum_seconds": 0.000764916,
+      "repeats": 7,
+      "surface_rmse": 4.4969172124985776e-17
+    },
+    {
+      "candidate_count": 64,
+      "checksum": 36.917994243538764,
+      "depth_two_queries": 64,
+      "maximum_absolute_error": 0.0,
+      "maximum_seconds": 0.012155875,
+      "median_seconds": 0.011485750000000001,
+      "method": "exhaustive_grid",
+      "minimum_seconds": 0.011373416,
+      "repeats": 7,
+      "surface_rmse": 0.0
+    },
+    {
+      "candidate_count": 64,
+      "checksum": 36.917994243538764,
+      "depth_two_queries": 4,
+      "maximum_absolute_error": 2.220446049250313e-16,
+      "maximum_seconds": 0.00078775,
+      "median_seconds": 0.00076825,
+      "method": "four_anchor_transfer",
+      "minimum_seconds": 0.000752209,
+      "repeats": 7,
+      "surface_rmse": 6.397344083151129e-17
+    },
+    {
+      "candidate_count": 128,
+      "checksum": 74.10132370482387,
+      "depth_two_queries": 128,
+      "maximum_absolute_error": 0.0,
+      "maximum_seconds": 0.023711459,
+      "median_seconds": 0.023378958000000002,
+      "method": "exhaustive_grid",
+      "minimum_seconds": 0.023188042000000002,
+      "repeats": 7,
+      "surface_rmse": 0.0
+    },
+    {
+      "candidate_count": 128,
+      "checksum": 74.10132370482387,
+      "depth_two_queries": 4,
+      "maximum_absolute_error": 2.220446049250313e-16,
+      "maximum_seconds": 0.0008241250000000001,
+      "median_seconds": 0.0008102500000000001,
+      "method": "four_anchor_transfer",
+      "minimum_seconds": 0.0007992920000000001,
+      "repeats": 7,
+      "surface_rmse": 6.186910185601235e-17
+    },
+    {
+      "candidate_count": 256,
+      "checksum": 140.40619728657217,
+      "depth_two_queries": 256,
+      "maximum_absolute_error": 0.0,
+      "maximum_seconds": 0.046956167,
+      "median_seconds": 0.046511666,
+      "method": "exhaustive_grid",
+      "minimum_seconds": 0.046216792,
+      "repeats": 7,
+      "surface_rmse": 0.0
+    },
+    {
+      "candidate_count": 256,
+      "checksum": 140.40619728657217,
+      "depth_two_queries": 4,
+      "maximum_absolute_error": 2.220446049250313e-16,
+      "maximum_seconds": 0.000986667,
+      "median_seconds": 0.000884833,
+      "method": "four_anchor_transfer",
+      "minimum_seconds": 0.0008565420000000001,
+      "repeats": 7,
+      "surface_rmse": 6.312105490603825e-17
+    }
+  ],
+  "schema_version": 1,
+  "scope": "single-host implementation timing; not a hardware-independent speedup claim",
+  "source": "G67",
+  "source_sha256": "2a8bd22b13b13e43ccc2c1fd936397e5c1680b60bf6086b794dd9bf487fc82d5",
+  "start_vertex": 1358,
+  "task": 0,
+  "task_edges": 12,
+  "task_vertices": 10
+}

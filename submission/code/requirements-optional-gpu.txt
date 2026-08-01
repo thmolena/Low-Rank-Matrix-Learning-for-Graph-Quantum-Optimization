@@ -1,9 +1,0 @@
-# Optional accelerated backends. The CPU reference runs everything without
-# these; they enable larger-scale statevector / tensor-network Trotter runs and
-# a learned message-passing GNN ordering policy.
-#   torch            -- GNN ordering policy + differentiable Trotter error
-#   cuquantum-python -- GPU statevector / tensor-network Trotter for n > ~20
-#   torch-geometric  -- message-passing GNN over the commutator graph
-torch>=2.0
-# cuquantum-python>=23.10   # requires CUDA-capable GPU
-# torch-geometric>=2.4

@@ -1,0 +1,77 @@
+{
+  "files": {
+    "code/manuscript_assets/figures/confirmation_rmse.pdf": {
+      "bytes": 14366,
+      "sha256": "d7e9e39d6860f87bd1e292516d8d53d0deee4c34bf989dcf2cbfddebab57f8be"
+    },
+    "code/manuscript_assets/figures/confirmation_rmse.png": {
+      "bytes": 84408,
+      "sha256": "b6d3f471517cabf79ab15e26a6a6bf3404c6a251268f65396d65878d42e053a3"
+    },
+    "code/manuscript_assets/figures/rank_regret.pdf": {
+      "bytes": 15499,
+      "sha256": "7a3ce5d73a94d09e667aecc2b36836857e207f6f71765ace881ed787bdcdcecc"
+    },
+    "code/manuscript_assets/figures/rank_regret.png": {
+      "bytes": 89270,
+      "sha256": "0fb1ea14e99c12ec8797130a0218d23b5f317b0ead0258c16697b143bb598b27"
+    },
+    "code/manuscript_assets/figures/runtime_scaling.pdf": {
+      "bytes": 12391,
+      "sha256": "ec44f54e28764182b27258f2b17d1591f439093a716c1b2df0eea9c852db8683"
+    },
+    "code/manuscript_assets/figures/runtime_scaling.png": {
+      "bytes": 44294,
+      "sha256": "ef86621be259d0485f2463b74b93ae2c9e0ec54c6833c5541f3ce304a6cb38d9"
+    },
+    "code/manuscript_assets/figures/temperature_selection.pdf": {
+      "bytes": 16716,
+      "sha256": "50ebe7032ec4aec7d0775438c33e19e35e248745cca4e0538b60e8d503ea0429"
+    },
+    "code/manuscript_assets/figures/temperature_selection.png": {
+      "bytes": 86278,
+      "sha256": "d14181b9f375f97836dcfb1a870dfdc86610af103c483ea1de429f2356a1e9c5"
+    },
+    "code/results/confirmation_by_source.csv": {
+      "bytes": 1965,
+      "sha256": "b819666da7eb2ba8cfd1a52413759786949a735cf890ee5847164b1eaf852821"
+    },
+    "code/results/locked_results.json": {
+      "bytes": 487243,
+      "sha256": "7a886e18d637d09cb9abd3395849b0ab74e1ff776269b2065c3beed118242171"
+    },
+    "code/results/primary_comparison.csv": {
+      "bytes": 1453,
+      "sha256": "70cbb8be80e5a122ca40fd881bc44b852e3877af8c8ea2d92b03884c48e8d6a8"
+    },
+    "code/results/rank_sweep.csv": {
+      "bytes": 19965,
+      "sha256": "f12430292c39c53b12f251048fbf96b5c5e6e6ebe12b917a63fd51302c0d99d1"
+    },
+    "code/results/runtime.csv": {
+      "bytes": 1360,
+      "sha256": "093e087fb16f45bf74621fdb305e0f3c83efe5e1fb8c2df62d629a3739ff7d2c"
+    },
+    "code/results/runtime.json": {
+      "bytes": 4203,
+      "sha256": "c1fe8ee4d575773be10e96d1008f1734cc364ceed55a837296e04bd5cdc3d399"
+    },
+    "code/results/singular_values.csv": {
+      "bytes": 3258,
+      "sha256": "8691ce7cfdfcd7b0258d15d933b8ad32126101d3b53e38dd81a71c8317998306"
+    },
+    "code/results/source_manifest.csv": {
+      "bytes": 2400,
+      "sha256": "164bda84c6d8c08c57cef1b762cd6360365b2178ff72f157d01a9e91817edcf9"
+    },
+    "code/results/split_comparison.csv": {
+      "bytes": 2866,
+      "sha256": "a8efcfd2bab3594b847c7d6e905cbb2e2c295b3c53fd45383930a487ba3aa7be"
+    },
+    "code/results/temperature_sweep.csv": {
+      "bytes": 1118,
+      "sha256": "2b2a83ada72e8afc95500ab8c3008a95ccaa53cfb52fc68ae16ef691d1ff02dd"
+    }
+  },
+  "schema_version": 3
+}

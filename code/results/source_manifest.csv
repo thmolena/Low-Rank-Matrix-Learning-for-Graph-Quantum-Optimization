@@ -1,0 +1,17 @@
+source,split,vertices,declared_edges,derived_tasks,minimum_task_edges,maximum_task_edges,sha256,url
+G1,training,800,19176,8,9,14,73bf704d8ffc55ba42260ab4cb659e3dcb6e729be70404d2cf476ba4e46d1665,https://web.stanford.edu/~yyye/yyye/Gset/G1
+G6,training,800,19176,8,9,13,e3dd8b29205280f1ad5806849321cdff6f11324c75cb95647d5783f3e47a1103,https://web.stanford.edu/~yyye/yyye/Gset/G6
+G11,training,800,1600,8,12,12,c2a760d2926db4fefd23b25c098dcd6311f711b355dbd1cc689fa25660c73174,https://web.stanford.edu/~yyye/yyye/Gset/G11
+G14,training,800,4694,8,14,22,dc769b978a40d458f693d5bd2cf8b8cceabd430b8e976204746696179c3d5945,https://web.stanford.edu/~yyye/yyye/Gset/G14
+G18,training,800,4694,8,15,23,6185af31fae0f7d59e232dad91178753574b7caa111dd6e6bf52f11c80e928d8,https://web.stanford.edu/~yyye/yyye/Gset/G18
+G22,training,2000,19990,8,9,11,9baeee06eb147b1c9ca42b43be86592d4e6fc60784a85af9be5b63d1362ef28e,https://web.stanford.edu/~yyye/yyye/Gset/G22
+G32,development,2000,4000,8,12,13,9760fce6b601832db1b1173c1a09c8556d64bfb27ba603ef52ca24ee6c8527cc,https://web.stanford.edu/~yyye/yyye/Gset/G32
+G43,development,1000,9990,8,9,13,9af5445b4b066cbf1eabe218d4e0d907cb6f211651cae557c761ec344dc37be8,https://web.stanford.edu/~yyye/yyye/Gset/G43
+G55,development,5000,12498,8,9,9,7537bbb613a6e6d0fe784937be68099eeb36227d85bb273299f22cb7d3ff2227,https://web.stanford.edu/~yyye/yyye/Gset/G55
+G70,development,10000,9999,8,9,9,0d965a2ff1444cc71d7740824b5b3a5e09fc1843cbf6d90691b52d5221987061,https://web.stanford.edu/~yyye/yyye/Gset/G70
+G60,development,7000,17148,8,9,9,b6480c1716ecca3bb9dac8e444746d6bf0914e9faed2d4e63cececa2af68a5c4,https://web.stanford.edu/~yyye/yyye/Gset/G60
+G72,development,10000,20000,8,12,12,d0495e1325cf400bfd6488d7b843670a32ffae7dcdeda0c2a9d9c2452223ef18,https://web.stanford.edu/~yyye/yyye/Gset/G72
+G65,development,8000,16000,8,12,13,8f110238fb6b9b7f19d6ba981f69768a8a55dda8005dae2ff9a463e8d4e12a04,https://web.stanford.edu/~yyye/yyye/Gset/G65
+G66,development,9000,18000,8,12,13,0af24b7e39277c707faab38f3a8baf773c2b4fa283454915f0c0371233a9a163,https://web.stanford.edu/~yyye/yyye/Gset/G66
+G67,confirmation,10000,20000,8,12,13,2a8bd22b13b13e43ccc2c1fd936397e5c1680b60bf6086b794dd9bf487fc82d5,https://web.stanford.edu/~yyye/yyye/Gset/G67
+G77,confirmation,14000,28000,8,12,13,b90932aa0d671319aed088853a6054739e5879986f314b4a98a1233b71b96fb1,https://web.stanford.edu/~yyye/yyye/Gset/G77

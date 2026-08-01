@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hqml-trotter-scheduling"
+version = "4.0.0"
+description = "Source-disjoint falsification audit of residual transfer for depth-two QAOA"
+readme = "README.md"
+requires-python = ">=3.10,<3.14"
+license = "MIT"
+dependencies = ["numpy>=1.26,<3", "scipy>=1.11,<2", "matplotlib>=3.7,<4"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering :: Physics",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10"]
+
+[project.scripts]
+qaoa-anchor-reproduce = "hqml_trotter_scheduling.experiment:main"
+qaoa-anchor-figures = "hqml_trotter_scheduling.figures:main"
+qaoa-anchor-benchmark = "hqml_trotter_scheduling.benchmark:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["hqml_trotter_scheduling*"]

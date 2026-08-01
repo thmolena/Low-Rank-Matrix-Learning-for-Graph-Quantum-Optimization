@@ -25,11 +25,12 @@ Thumbs.db
 *.swp
 *.swo
 
-# LaTeX build artifacts (keep .tex, .bib, .bbl and the compiled .pdf)
+# LaTeX build artifacts (keep .tex, .bib and the compiled .pdf)
 *.aux
 *.log
 *.out
 *.blg
+*.bbl
 *.fls
 *.fdb_latexmk
 *.synctex.gz

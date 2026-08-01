@@ -1,140 +1,76 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Zero-Overhead Cancellation of the Leading Trotter Error via Commutator-Graph Scheduling</title>
-<meta name="description" content="Commutator-graph scheduling (CGS): an ordering-impotence theorem, an antithetic schedule that cancels the leading Trotter error at identical gate count, a certified shot estimator, and a fully reproducible benchmark (pip package specops-cgs).">
-<style>
-  body { margin: 0; padding: 0; background: #ffffff; color: #1a1a1a;
-         font-family: Georgia, "Times New Roman", serif; line-height: 1.55; }
-  .page { max-width: 46em; margin: 0 auto; padding: 2.5em 1.25em 4em; }
-  h1 { font-size: 1.65em; line-height: 1.25; margin: 0 0 .4em; }
-  h2 { font-size: 1.2em; margin: 2em 0 .5em; border-bottom: 1px solid #d0d0d0; padding-bottom: .2em; }
-  .authors { font-size: 1.05em; margin: .2em 0; }
-  .affil { color: #444; font-style: italic; font-size: .95em; margin: .1em 0 1em; }
-  .links a { margin-right: 1.4em; }
-  a { color: #1a4a8a; }
-  code, pre { font-family: "Courier New", Courier, monospace; font-size: .92em; }
-  pre { background: #f4f4f4; border: 1px solid #ddd; padding: .8em 1em; overflow-x: auto; }
-  ol.contrib { padding-left: 1.4em; }
-  ol.contrib li { margin-bottom: .7em; }
-  table { border-collapse: collapse; width: 100%; font-size: .95em; }
-  th, td { border: 1px solid #ccc; padding: .35em .6em; text-align: left; }
-  th { background: #f0f0f0; }
-  .note { color: #444; font-size: .92em; }
-  .abstract { text-align: justify; }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="A source-disjoint audit of QR-anchor-gated residual transfer for depth-two QAOA.">
+  <title>QR-Anchor-Gated Residual Transfer Audit</title>
+  <style>
+    :root{--ink:#17211f;--muted:#5d6a66;--paper:#f6f4ed;--card:#fffdf8;--accent:#12675a;--line:#d9d7cc}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.65 ui-serif,Georgia,serif}
+    main,header,footer{width:min(980px,calc(100% - 36px));margin:auto}header{padding:72px 0 42px}section{padding:38px 0;border-top:1px solid var(--line)}
+    h1,h2{font-family:ui-sans-serif,system-ui;line-height:1.12}h1{font-size:clamp(2.3rem,6vw,4.8rem);margin:.2em 0}h2{font-size:1.7rem}
+    .eyebrow{font:700 .78rem ui-sans-serif,system-ui;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+    .lede{font-size:1.22rem;color:#344943;max-width:800px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+    .number{font:750 2rem ui-sans-serif,system-ui;color:var(--accent)}a{color:var(--accent)}code{font-size:.88em}pre{overflow:auto;background:#17211f;color:white;padding:18px;border-radius:12px}
+    img{display:block;max-width:100%;background:white;border:1px solid var(--line);border-radius:10px}.figures{display:grid;grid-template-columns:1fr 1fr;gap:18px}.note{border-left:4px solid #c96f38;padding:12px 18px;background:#fff6ea}
+    @media(max-width:720px){.grid,.figures{grid-template-columns:1fr}}
+  </style>
 </head>
 <body>
-<div class="page">
-
-<h1>Zero-Overhead Cancellation of the Leading Trotter Error via Commutator-Graph Scheduling</h1>
-<p class="authors">Molena Huynh</p>
-<p class="affil">North Carolina State University, Raleigh, North Carolina 27695, USA &mdash; molena.huynh@jmp.com</p>
-
-<p class="links">
-  <a href="https://github.com/thmolena/Topological-Graph-for-Hamiltonian-Simulation"><strong>GitHub repository</strong></a>
-  <a href="submission/main.pdf">Manuscript (PDF)</a>
-  <a href="submission/code/README.md">Reproducibility package</a>
-</p>
-
-<h2>Abstract</h2>
-<p class="abstract">
-A quantum computer is a stochastic device: the Born rule returns one bitstring per run, so every
-quantity a simulation reports&mdash;fidelities, observables, and the very error one is trying to
-control&mdash;is a statistical estimate over samples, and the structure that governs those estimates
-is the algebra of the operators being evolved. We introduce <em>commutator-graph scheduling</em>
-(CGS), which doubles the convergence order of first-order Trotterization at zero gate, qubit, or
-depth overhead by making the leading error an explicit, estimable operator on that algebra. CGS
-recasts the leading error as an exact, matrix-free operator&mdash;the commutator error form
-<code>E&#960; = &#8721;<sub>a&lt;b</sub> [h<sub>&#960;(a)</sub>, h<sub>&#960;(b)</sub>]</code>, a
-signed sum of Pauli strings over the edges of the commutator graph, validated against dense
-exponentials to 10<sup>&#8722;9</sup>. We prove that reordering only re-signs this operator, leaving
-its norm exactly invariant on collision-free families, so no fixed ordering escapes the
-O(t&#178;/r) rate; the true free parameter is the per-step <em>schedule</em>, and a step-alternating
-antithetic schedule cancels the leading error and converges at O(t&#179;/r&#178;) with the identical
-L&#183;r rotations. Across 144 structured Hamiltonians versus exact statevector references, CGS
-lifts the empirical convergence rate from 1.96 to 4.07, reaches fidelity 0.99 with 1.40&times; fewer
-rotations than the best first-order ordering, and attains 0.999 where first-order Trotter cannot. A
-matrix-free Krylov reference extends the exact benchmark to 14 qubits, where the order doubling is
-size independent and the matched-cost speedup reaches 2.06&times;. An interpretable scheduler over
-ten graph features selects the gate-optimal schedule per instance with 93% leave-one-out accuracy.
-</p>
-
-<h2>Contributions</h2>
-<ol class="contrib">
-  <li><strong>An exact, estimable error operator.</strong> The commutator error form: a matrix-free
-  representation of the leading Trotter error as a signed Pauli-string sum over the commutator graph
-  (Definition&nbsp;1), validated against the dense pair-commutator sum to 10<sup>&#8722;9</sup>.</li>
-  <li><strong>A statistical theory of scheduling, with full proofs.</strong> An ordering-impotence
-  theorem (Theorem&nbsp;1: no fixed ordering escapes the first-order rate on collision-free
-  families); antithetic cancellation at identical gate budget (Theorem&nbsp;2); a quantitative
-  BCH remainder (Theorem&nbsp;3); strict optimality of leading cancellation (Theorem&nbsp;4);
-  NP-hardness of residual minimization with a spectral relaxation (Theorem&nbsp;5); and an unbiased
-  shot-based estimator of the residual with a finite-sample certified confidence interval
-  (Theorem&nbsp;6). Because a quantum computer is interrogated only through Born-rule samples, the
-  accuracy claim itself is delivered as a certified statistical inference.</li>
-  <li><strong>A zero-overhead algorithm, released as a pip-installable package.</strong> CGS combines
-  the antithetic fold with commuting-clique compression (Proposition&nbsp;2) and an interpretable
-  learned scheduler over ten listing-order-invariant graph features (Proposition&nbsp;3), packaged
-  as <code>specops-cgs</code> with the single reproduction command <code>cgs-reproduce</code>.</li>
-  <li><strong>A matched-cost empirical benchmark.</strong> Convergence rate 1.96 &rarr; 4.07 at
-  identical rotation count; fidelity 0.99 reached with 1.40&times; fewer rotations (315 &rarr; 236);
-  0.999 reached only by the folded schedules (315 rotations) while no first-order ordering succeeds
-  within the swept budget; size-independent order doubling up to n&nbsp;=&nbsp;14 qubits with a
-  2.06&times; matched-cost speedup at n&nbsp;=&nbsp;14; learned scheduler at 93% leave-one-out
-  accuracy, near-oracle efficiency (114.0 vs. 112.4 mean rotations).</li>
-</ol>
-
-<h2>Reproduce every result</h2>
-<p>Every figure, table, and quoted number in the manuscript is generated from a single seeded run of
-the accompanying package; nothing is entered by hand. <code>results/summary.json</code> records full
-provenance (seed, command, platform, package versions, runtime, peak memory), and three integrity
-gates (fast Pauli kernel vs. dense <code>expm</code>, matrix-free error form vs. dense pair-commutator
-sum, Krylov reference vs. dense <code>expm</code>, all to 10<sup>&#8722;9</sup>) must pass before any
-number is emitted.</p>
-<pre>
-git clone https://github.com/thmolena/Topological-Graph-for-Hamiltonian-Simulation
-cd Topological-Graph-for-Hamiltonian-Simulation/submission/code
-pip install .
-cgs-reproduce                 # full run: 2-4 minutes on a laptop CPU, ~500 MB
-cgs-reproduce --quick         # seconds-scale demo of the same pipeline
-</pre>
-<p class="note">The full configuration sweeps 144 structured instances (transverse-field Ising,
-Heisenberg, random molecular-like; n = 4&ndash;14 qubits; 8 seeded draws each). The referee-facing
-<a href="submission/code/README.md">README</a> maps each figure and table to its generating
-function.</p>
-
-<h2>Headline numbers (all regenerated by <code>cgs-reproduce</code>)</h2>
-<table>
-  <tr><th>Quantity</th><th>Value</th></tr>
-  <tr><td>Empirical convergence rate, first-order / antithetic</td><td>1.96 / 4.07</td></tr>
-  <tr><td>Rotations to fidelity 0.99 (best first-order / antithetic)</td><td>315 / 236 (1.40&times;)</td></tr>
-  <tr><td>Rotations to fidelity 0.999 (first-order / antithetic)</td><td>not reached / 315</td></tr>
-  <tr><td>Matched-cost speedup at n = 14 qubits</td><td>2.06&times;</td></tr>
-  <tr><td>Ordering impotence: median ordering vs. exact floor</td><td>within 1.097&times;</td></tr>
-  <tr><td>Learned scheduler leave-one-out accuracy</td><td>93%</td></tr>
-</table>
-
-<h2>Context</h2>
-<p>This work is part of a research program on the spectral truncation of operators for
-query-efficient quantum optimization and simulation, in which statistics is treated as structural to
-quantum computing (Born-rule sampling makes every reported quantity an estimation problem) and
-interpretable learned surrogates are used to accelerate scientific computation. The manuscript is
-prepared for submission to <em>PRX Quantum</em> (REVTeX&nbsp;4.2).</p>
-
-<h2>Citation</h2>
-<pre>
-@article{huynh2026topoham,
-  title  = {Zero-Overhead Cancellation of the Leading Trotter Error
-            via Commutator-Graph Scheduling},
-  author = {Huynh, Molena},
-  year   = {2026},
-  note   = {Part of the spectral-truncation operators (SpecOps) program},
-}
-</pre>
-
-</div>
+  <header>
+    <p class="eyebrow">Reproducible negative result</p>
+    <h1>QR-Anchor-Gated Residual Transfer for Depth-Two QAOA</h1>
+    <p class="lede">Four anchor evaluations improve confirmation surface
+    reconstruction, but a zero-depth-two-query transfer makes the same grid
+    decisions. The evidence supports a conditional surrogate, not query
+    necessity.</p>
+    <p><a href="main.pdf">Read the paper</a> · <a href="code/README.md">Run the code</a> · <a href="code/results/locked_results.json">Inspect locked evidence</a></p>
+  </header>
+  <main>
+    <section>
+      <h2>What was tested</h2>
+      <div class="grid">
+        <div class="card"><div class="number">16</div>checksum-pinned Stanford Gset source files</div>
+        <div class="card"><div class="number">128</div>derived ten-vertex tasks, split by whole source</div>
+        <div class="card"><div class="number">256</div>depth-two candidates per task</div>
+      </div>
+      <p>The candidate subtracts the established exact depth-one expectation,
+      chooses four residual columns by uniform pivoted QR, and transfers the
+      training residual nearest to the four measured target residuals. A
+      salience temperature of 2 was rejected as a floating-point tie artifact;
+      the frozen temperature is 0.</p>
+    </section>
+    <section>
+      <h2>The decisive comparison</h2>
+      <div class="grid">
+        <div class="card"><strong>Nearest p=1 residual</strong><br>0 queries · 0 regret · RMSE 0.011280</div>
+        <div class="card"><strong>Anchor-linear residual</strong><br>4 queries · 0 regret · RMSE 0.011811</div>
+        <div class="card"><strong>Anchor-gated residual</strong><br>4 queries · 0 regret · RMSE 0.006095</div>
+      </div>
+      <p class="note">All figures are descriptive for only two held-out source
+      files (16 derived tasks). They do not show quantum advantage, hardware
+      performance, continuous-angle optimality, or out-of-family generalization.</p>
+    </section>
+    <section>
+      <h2>Quantitative evidence</h2>
+      <div class="figures">
+        <img src="code/manuscript_assets/figures/rank_regret.png" alt="Development regret versus anchor rank">
+        <img src="code/manuscript_assets/figures/confirmation_rmse.png" alt="Confirmation RMSE by method">
+        <img src="code/manuscript_assets/figures/temperature_selection.png" alt="Development temperature selection">
+        <img src="code/manuscript_assets/figures/runtime_scaling.png" alt="Single-host runtime scaling">
+      </div>
+    </section>
+    <section>
+      <h2>Verify without overwriting</h2>
+      <pre><code>python -m pip install ./code
+qaoa-anchor-reproduce --cache-dir /path/to/gset-cache --verify
+python -m pytest -q code/tests
+python code/scripts/validate_release.py</code></pre>
+      <p>Wall-time evidence is host-specific and generated separately with
+      <code>qaoa-anchor-benchmark</code>.</p>
+    </section>
+  </main>
+  <footer><p>Molena Huynh · public preprint companion · July 2026</p></footer>
 </body>
 </html>

@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "A Source-Disjoint Audit of QR-Anchor-Gated Residual Transfer for Depth-Two QAOA"
+authors:
+  - family-names: Huynh
+    given-names: Molena
+version: 4.0.0
+date-released: 2026-07-31
+license: MIT
+keywords:
+  - falsification audit
+  - residual interpolation
+  - pivoted QR
+  - QAOA
+  - reproducibility
